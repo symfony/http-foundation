@@ -356,6 +356,22 @@ class PdoSessionHandlerTest extends TestCase
         $this->assertEmpty($table->getColumns(), 'The table was not overwritten');
     }
 
+    public function testConfigureSchemaSetsUtf8mb4CharsetForMysql()
+    {
+        $pdo = new MockPdo('mysql');
+        $pdo->prepareResult = $this->createMock(\PDOStatement::class);
+
+        $schema = new Schema();
+
+        $pdoSessionHandler = new PdoSessionHandler($pdo);
+        $pdoSessionHandler->configureSchema($schema, fn () => true);
+
+        $this->assertTrue($schema->hasTable('sessions'));
+        $table = $schema->getTable('sessions');
+        $this->assertSame('utf8mb4', $table->getOption('charset'));
+        $this->assertSame('utf8mb4_bin', $table->getOption('collate'));
+    }
+
     public static function provideUrlDsnPairs()
     {
         yield ['mysql://localhost/test', 'mysql:host=localhost;dbname=test;'];

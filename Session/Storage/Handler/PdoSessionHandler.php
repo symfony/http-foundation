@@ -194,6 +194,7 @@ class PdoSessionHandler extends AbstractSessionHandler
                 $table->addColumn($this->dataCol, Types::BLOB)->setNotnull(true);
                 $table->addColumn($this->lifetimeCol, Types::INTEGER)->setUnsigned(true)->setNotnull(true);
                 $table->addColumn($this->timeCol, Types::INTEGER)->setUnsigned(true)->setNotnull(true);
+                $table->addOption('charset', 'utf8mb4');
                 $table->addOption('collate', 'utf8mb4_bin');
                 $table->addOption('engine', 'InnoDB');
                 break;
