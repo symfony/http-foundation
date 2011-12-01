@@ -148,10 +148,7 @@ class Session implements \Serializable
     public function remove($name)
     {
         $this->start();
-
-        if (array_key_exists($name, $this->attributes)) {
-            unset($this->attributes[$name]);
-        }
+        unset($this->attributes[$name]);
     }
 
     /**
