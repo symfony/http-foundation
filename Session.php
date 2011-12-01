@@ -109,10 +109,7 @@ class Session implements \Serializable
      */
     public function set($name, $value)
     {
-        if (false === $this->started) {
-            $this->start();
-        }
-
+        $this->start();
         $this->attributes[$name] = $value;
     }
 
@@ -137,10 +134,7 @@ class Session implements \Serializable
      */
     public function replace(array $attributes)
     {
-        if (false === $this->started) {
-            $this->start();
-        }
-
+        $this->start();
         $this->attributes = $attributes;
     }
 
@@ -153,9 +147,7 @@ class Session implements \Serializable
      */
     public function remove($name)
     {
-        if (false === $this->started) {
-            $this->start();
-        }
+        $this->start();
 
         if (array_key_exists($name, $this->attributes)) {
             unset($this->attributes[$name]);
@@ -169,9 +161,7 @@ class Session implements \Serializable
      */
     public function clear()
     {
-        if (false === $this->started) {
-            $this->start();
-        }
+        $this->start();
 
         $this->attributes = array();
         $this->flashes = array();
@@ -208,10 +198,7 @@ class Session implements \Serializable
      */
     public function getId()
     {
-        if (false === $this->started) {
-            $this->start();
-        }
-
+        $this->start();
         return $this->storage->getId();
     }
 
@@ -232,10 +219,7 @@ class Session implements \Serializable
      */
     public function setFlashes($values)
     {
-        if (false === $this->started) {
-            $this->start();
-        }
-
+        $this->start();
         $this->flashes = $values;
         $this->oldFlashes = array();
     }
@@ -261,10 +245,7 @@ class Session implements \Serializable
      */
     public function setFlash($name, $value)
     {
-        if (false === $this->started) {
-            $this->start();
-        }
-
+        $this->start();
         $this->flashes[$name] = $value;
         unset($this->oldFlashes[$name]);
     }
@@ -278,10 +259,7 @@ class Session implements \Serializable
      */
     public function hasFlash($name)
     {
-        if (false === $this->started) {
-            $this->start();
-        }
-
+        $this->start();
         return array_key_exists($name, $this->flashes);
     }
 
@@ -292,10 +270,7 @@ class Session implements \Serializable
      */
     public function removeFlash($name)
     {
-        if (false === $this->started) {
-            $this->start();
-        }
-
+        $this->start();
         unset($this->flashes[$name]);
     }
 
@@ -304,19 +279,14 @@ class Session implements \Serializable
      */
     public function clearFlashes()
     {
-        if (false === $this->started) {
-            $this->start();
-        }
-
+        $this->start();
         $this->flashes = array();
         $this->oldFlashes = array();
     }
 
     public function save()
     {
-        if (false === $this->started) {
-            $this->start();
-        }
+        $this->start();
 
         $this->flashes = array_diff_key($this->flashes, $this->oldFlashes);
 
