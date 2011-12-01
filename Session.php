@@ -32,7 +32,9 @@ class Session implements \Serializable
     /**
      * Constructor.
      *
-     * @param SessionStorageInterface $storage A SessionStorageInterface instance
+     * @param \Symfony\Component\HttpFoundation\SessionStorage\SessionStorageInterface $storage A SessionStorageInterface instance
+     * @return \Symfony\Component\HttpFoundation\Session
+     *
      */
     public function __construct(SessionStorageInterface $storage)
     {
