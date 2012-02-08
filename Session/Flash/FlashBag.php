@@ -9,14 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\HttpFoundation\SessionFlash;
+namespace Symfony\Component\HttpFoundation\Session\Flash;
 
 /**
- * AutoExpireFlashBag flash message container.
+ * FlashBag flash message container.
  *
  * @author Drak <drak@zikula.org>
  */
-class AutoExpireFlashBag implements FlashBagInterface
+class FlashBag implements FlashBagInterface
 {
     private $name = 'flashes';
 
@@ -42,7 +42,6 @@ class AutoExpireFlashBag implements FlashBagInterface
     public function __construct($storageKey = '_sf2_flashes')
     {
         $this->storageKey = $storageKey;
-        $this->flashes = array('display' => array(), 'new' => array());
     }
 
     /**
@@ -64,12 +63,6 @@ class AutoExpireFlashBag implements FlashBagInterface
     public function initialize(array &$flashes)
     {
         $this->flashes = &$flashes;
-
-        // The logic: messages from the last request will be stored in new, so we move them to previous
-        // This request we will show what is in 'display'.  What is placed into 'new' this time round will
-        // be moved to display next time round.
-        $this->flashes['display'] = array_key_exists('new', $this->flashes) ? $this->flashes['new'] : array();
-        $this->flashes['new'] = array();
     }
 
     /**
@@ -81,7 +74,15 @@ class AutoExpireFlashBag implements FlashBagInterface
             throw new \InvalidArgumentException(sprintf('Flash type %s not found', $type));
         }
 
-        return $this->flashes['display'][$type];
+        return $this->flashes[$type];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function set($type, $message)
+    {
+        $this->flashes[$type] = $message;
     }
 
     /**
@@ -89,7 +90,7 @@ class AutoExpireFlashBag implements FlashBagInterface
      */
     public function all()
     {
-        return array_key_exists('display', $this->flashes) ? (array)$this->flashes['display'] : array();
+        return $this->flashes;
     }
 
     /**
@@ -101,15 +102,8 @@ class AutoExpireFlashBag implements FlashBagInterface
             throw new \InvalidArgumentException(sprintf('Flash type %s not found', $type));
         }
 
-        $return = null;
-        if (isset($this->flashes['new'][$type])) {
-            unset($this->flashes['new'][$type]);
-        }
-
-        if (isset($this->flashes['display'][$type])) {
-            $return = $this->flashes['display'][$type];
-            unset($this->flashes['display'][$type]);
-        }
+        $return = $this->get($type);
+        unset($this->flashes[$type]);
 
         return $return;
     }
@@ -119,8 +113,8 @@ class AutoExpireFlashBag implements FlashBagInterface
      */
     public function popAll()
     {
-        $return = $this->flashes['display'];
-        $this->flashes = array('new' => array(), 'display' => array());
+        $return = $this->all();
+        $this->flashes = array();
 
         return $return;
     }
@@ -130,15 +124,7 @@ class AutoExpireFlashBag implements FlashBagInterface
      */
     public function setAll(array $messages)
     {
-        $this->flashes['new'] = $messages;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function set($type, $message)
-    {
-        $this->flashes['new'][$type] = $message;
+        $this->flashes = $messages;
     }
 
     /**
@@ -146,7 +132,7 @@ class AutoExpireFlashBag implements FlashBagInterface
      */
     public function has($type)
     {
-        return array_key_exists($type, $this->flashes['display']);
+        return array_key_exists($type, $this->flashes);
     }
 
     /**
@@ -154,7 +140,7 @@ class AutoExpireFlashBag implements FlashBagInterface
      */
     public function keys()
     {
-        return array_keys($this->flashes['display']);
+        return array_keys($this->flashes);
     }
 
     /**
@@ -170,9 +156,6 @@ class AutoExpireFlashBag implements FlashBagInterface
      */
     public function clear()
     {
-        $return = $this->popAll();
-        $this->flashes = array('display' => array(), 'new' => array());
-
-        return $return;
+        return $this->popAll();
     }
 }

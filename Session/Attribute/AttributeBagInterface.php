@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\HttpFoundation\SessionAttribute;
+namespace Symfony\Component\HttpFoundation\Session\Attribute;
 
-use Symfony\Component\HttpFoundation\SessionBagInterface;
+use Symfony\Component\HttpFoundation\Session\SessionBagInterface;
 
 /**
  * Attributes store.

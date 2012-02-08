@@ -9,13 +9,13 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\HttpFoundation\SessionStorage;
+namespace Symfony\Component\HttpFoundation\Session\Storage;
 
-use Symfony\Component\HttpFoundation\SessionFlash\FlashBag;
-use Symfony\Component\HttpFoundation\SessionFlash\FlashBagInterface;
-use Symfony\Component\HttpFoundation\SessionAttribute\AttributeBag;
-use Symfony\Component\HttpFoundation\SessionAttribute\AttributeBagInterface;
-use Symfony\Component\HttpFoundation\SessionBagInterface;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
+use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBag;
+use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface;
+use Symfony\Component\HttpFoundation\Session\SessionBagInterface;
 
 /**
  * This provides a base class for session attribute storage.

@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\HttpFoundation\SessionStorage;
+namespace Symfony\Component\HttpFoundation\Session\Storage;
 
 /**
  * NativeFileSessionStorage.

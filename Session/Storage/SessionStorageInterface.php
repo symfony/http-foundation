@@ -9,12 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\HttpFoundation\SessionStorage;
+namespace Symfony\Component\HttpFoundation\Session\Storage;
 
-use Symfony\Component\HttpFoundation\SessionBagInterface;
+use Symfony\Component\HttpFoundation\Session\SessionBagInterface;
 
 /**
- * SessionStorageInterface.
+ * StorageInterface.
  *
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Drak <drak@zikula.org>

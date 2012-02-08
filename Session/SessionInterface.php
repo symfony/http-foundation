@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\HttpFoundation;
+namespace Symfony\Component\HttpFoundation\Session;
 
-use Symfony\Component\HttpFoundation\SessionStorage\AttributeInterface;
-use Symfony\Component\HttpFoundation\SessionFlash\FlashBagInterface;
+use Symfony\Component\HttpFoundation\Session\Storage\AttributeInterface;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 
 /**
  * Interface for the session.
