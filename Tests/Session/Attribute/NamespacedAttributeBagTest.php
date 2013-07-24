@@ -141,6 +141,8 @@ class NamespacedAttributeBagTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('drak', $this->bag->get('user.login'));
         $this->bag->remove('user.login');
         $this->assertNull($this->bag->get('user.login'));
+
+        $this->assertNull($this->bag->remove('None/nonexistent'));
     }
 
     public function testClear()
