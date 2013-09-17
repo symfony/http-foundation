@@ -201,7 +201,7 @@ class Response
         $this->headers = new ResponseHeaderBag($headers);
         $this->setContent($content);
         $this->setStatusCode($status);
-        $this->setProtocolVersion('1.0');
+        $this->setProtocolVersion('1.1');
         if (!$this->headers->has('Date')) {
             $this->setDate(new \DateTime(null, new \DateTimeZone('UTC')));
         }
