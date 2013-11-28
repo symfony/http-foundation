@@ -84,7 +84,7 @@ class NamespacedAttributeBag extends AttributeBag
     public function remove($name)
     {
         $retval = null;
-        $attributes = & $this->resolveAttributePath($name);
+        $attributes = & $this->resolveAttributePath($name, true);
         $name = $this->resolveKey($name);
         if (null !== $attributes && array_key_exists($name, $attributes)) {
             $retval = $attributes[$name];
