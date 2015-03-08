@@ -1253,6 +1253,7 @@ class Response
         ) {
             if ($flush) {
                 ob_end_flush();
+                flush();
             } else {
                 ob_end_clean();
             }
