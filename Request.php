@@ -80,6 +80,11 @@ class Request
     );
 
     protected static $httpMethodParameterOverride = false;
+    
+    /**
+     * @var \Symfony\Component\HttpFoundation\ParameterBag
+     */
+    protected static $parsedRequest = null;
 
     /**
      * Custom parameters.
@@ -299,16 +304,21 @@ class Request
             }
         }
 
-        $request = self::createRequestFromFactory($_GET, $_POST, array(), $_COOKIE, $_FILES, $server);
+        if(self::$parsedRequest === null)
+        {
+            $request = self::createRequestFromFactory($_GET, $_POST, array(), $_COOKIE, $_FILES, $server);
 
-        if (0 === strpos($request->headers->get('CONTENT_TYPE'), 'application/x-www-form-urlencoded')
-            && in_array(strtoupper($request->server->get('REQUEST_METHOD', 'GET')), array('PUT', 'DELETE', 'PATCH'))
-        ) {
-            parse_str($request->getContent(), $data);
-            $request->request = new ParameterBag($data);
+            if (0 === strpos($request->headers->get('CONTENT_TYPE'), 'application/x-www-form-urlencoded')
+                && in_array(strtoupper($request->server->get('REQUEST_METHOD', 'GET')), array('PUT', 'DELETE', 'PATCH'))
+            ) {
+                parse_str($request->getContent(), $data);
+                $request->request = new ParameterBag($data);
+            }
+
+            self::$parsedRequest = $request;
         }
 
-        return $request;
+        return self::$parsedRequest;
     }
 
     /**
