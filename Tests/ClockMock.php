@@ -11,7 +11,7 @@
 
 namespace Symfony\Component\HttpFoundation;
 
-function time($asFloat = false)
+function time()
 {
     return Tests\time();
 }
