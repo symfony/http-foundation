@@ -192,6 +192,16 @@ class UploadedFile extends File
     }
 
     /**
+     * Returns whether the test mode is activated.
+     *
+     * @return bool True if test mode is activated.
+     */
+    public function getTest()
+    {
+        return $this->test;
+    }
+
+    /**
      * Returns whether the file was uploaded successfully.
      *
      * @return bool True if the file has been uploaded with HTTP and no error occurred.

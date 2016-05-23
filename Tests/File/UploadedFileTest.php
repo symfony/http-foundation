@@ -128,6 +128,20 @@ class UploadedFileTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('gif', $file->getClientOriginalExtension());
     }
 
+    public function testGetTest()
+    {
+        $file = new UploadedFile(
+            __DIR__.'/Fixtures/test.gif',
+            'original.gif',
+            'image/gif',
+            filesize(__DIR__.'/Fixtures/test.gif'),
+            null,
+            true
+        );
+
+        $this->assertEquals(true, $file->getTest());
+    }
+
     /**
      * @expectedException \Symfony\Component\HttpFoundation\File\Exception\FileException
      */
