@@ -1332,8 +1332,20 @@ class Request
             static::initializeFormats();
         }
 
-        return isset(static::$formats[$format]) ? static::$formats[$format][0] : null;
+        if (isset(static::$formats[$format])) {
+            //Api versions change over time....let's return the one being requested instead of always the top one.
+            if ($this->headers->get('Accept') && in_array($this->headers->get('Accept'), static::$formats[$format])) {
+                return $this->headers->get('Accept');
+            }
+
+            //Default to returning the top one if not found.
+            return static::$formats[$format][0];
+        }
+
+        //Return null otherwise.
+        return null;
     }
+
 
     /**
      * Gets the mime types associated with the format.
