@@ -1850,7 +1850,8 @@ class Request
         }
 
         $basename = basename($baseUrl);
-        if (empty($basename) || !strpos(rawurldecode($truncatedRequestUri), $basename)) {
+        $baseUrlPos = strpos(rawurldecode($truncatedRequestUri), $baseUrl);
+        if (empty($basename) || $baseUrlPos === false || $baseUrlPos !== 0) {
             // no match whatsoever; set it blank
             return '';
         }
