@@ -1983,6 +1983,13 @@ class Request
 
     private static function createRequestFromFactory(array $query = array(), array $request = array(), array $attributes = array(), array $cookies = array(), array $files = array(), array $server = array(), $content = null)
     {
+        // The php's built-in web server stores the Content-Type header value in HTTP_CONTENT_TYPE field.
+        if (array_key_exists('HTTP_CONTENT_LENGTH', $server)) {
+            $server['CONTENT_LENGTH'] = $server['HTTP_CONTENT_LENGTH'];
+        }
+        if (array_key_exists('HTTP_CONTENT_TYPE', $server)) {
+            $server['CONTENT_TYPE'] = $server['HTTP_CONTENT_TYPE'];
+        }
         if (self::$requestFactory) {
             $request = call_user_func(self::$requestFactory, $query, $request, $attributes, $cookies, $files, $server, $content);
 
