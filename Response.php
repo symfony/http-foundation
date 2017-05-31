@@ -1264,6 +1264,7 @@ class Response
         while ($level-- > $targetLevel && ($s = $status[$level]) && (!isset($s['del']) ? !isset($s['flags']) || $flags === ($s['flags'] & $flags) : $s['del'])) {
             if ($flush) {
                 ob_end_flush();
+                flush();
             } else {
                 ob_end_clean();
             }
