@@ -274,9 +274,11 @@ class Response
             $charset = $this->charset ?: 'UTF-8';
             if (!$headers->has('Content-Type')) {
                 $headers->set('Content-Type', 'text/html; charset='.$charset);
-            } elseif (0 === stripos($headers->get('Content-Type'), 'text/') && false === stripos($headers->get('Content-Type'), 'charset')) {
-                // add the charset
-                $headers->set('Content-Type', $headers->get('Content-Type').'; charset='.$charset);
+            } elseif (false === stripos($headers->get('Content-Type'), 'charset')) {
+                if (0 === stripos($headers->get('Content-Type'), 'text/') || 0 === stripos($headers->get('Content-Type'), 'application/json')) {
+                    // add the charset
+                    $headers->set('Content-Type', $headers->get('Content-Type') . '; charset=' . $charset);
+                }
             }
 
             // Fix Content-Length
