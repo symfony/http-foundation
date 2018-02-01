@@ -214,7 +214,7 @@ class Cookie
      */
     public function getExpiresTime()
     {
-        return $this->expire;
+        return (int) $this->expire;
     }
 
     /**
