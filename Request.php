@@ -184,7 +184,12 @@ class Request
      * @var string
      */
     protected $defaultLocale = 'en';
-
+    
+    /**
+     * @var boolean
+     */
+    protected $validTrustedProxyIP;
+    
     /**
      * @var array
      */
@@ -1945,7 +1950,15 @@ class Request
      */
     public function isFromTrustedProxy()
     {
-        return self::$trustedProxies && IpUtils::checkIp($this->server->get('REMOTE_ADDR'), self::$trustedProxies);
+        if (!self::$trustedProxies) {
+            return false;
+        }
+
+        if (!isset($this->validTrustedProxyIP)) {
+            $this->validTrustedProxyIP = IpUtils::checkIp($this->server->get('REMOTE_ADDR'), self::$trustedProxies);
+        }
+
+        return $this->validTrustedProxyIP;
     }
 
     private function getTrustedValues($type, $ip = null)
