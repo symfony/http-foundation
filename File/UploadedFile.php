@@ -170,7 +170,8 @@ class UploadedFile extends File
     {
         $isOk = UPLOAD_ERR_OK === $this->error;
 
-        return $this->test ? $isOk : $isOk && is_uploaded_file($this->getPathname());
+        return $this->test ? $isOk : $isOk;
+        //return $this->test ? $isOk : $isOk && is_uploaded_file($this->getPathname());
     }
 
     /**
