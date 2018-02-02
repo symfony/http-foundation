@@ -230,6 +230,7 @@ class MimeTypeExtensionGuesser implements ExtensionGuesserInterface
         'application/vnd.fujixerox.docuworks.binder' => 'xbd',
         'application/vnd.fuzzysheet' => 'fzs',
         'application/vnd.genomatix.tuxedo' => 'txd',
+        'application/vnd.geo+json' => 'geojson',
         'application/vnd.geogebra.file' => 'ggb',
         'application/vnd.geogebra.tool' => 'ggt',
         'application/vnd.geometry-explorer' => 'gex',
