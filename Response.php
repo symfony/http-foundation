@@ -496,7 +496,7 @@ class Response
      *
      * @final
      */
-    public function getCharset(): ?string
+    public function getCharset(): string
     {
         return $this->charset;
     }
@@ -634,7 +634,7 @@ class Response
      *
      * @final
      */
-    public function getDate(): ?\DateTimeInterface
+    public function getDate(): \DateTimeInterface
     {
         return $this->headers->getDate('Date');
     }
@@ -691,7 +691,7 @@ class Response
      *
      * @final
      */
-    public function getExpires(): ?\DateTimeInterface
+    public function getExpires(): \DateTimeInterface
     {
         try {
             return $this->headers->getDate('Expires');
@@ -737,7 +737,7 @@ class Response
      *
      * @final
      */
-    public function getMaxAge(): ?int
+    public function getMaxAge(): int
     {
         if ($this->headers->hasCacheControlDirective('s-maxage')) {
             return (int) $this->headers->getCacheControlDirective('s-maxage');
@@ -797,7 +797,7 @@ class Response
      *
      * @final
      */
-    public function getTtl(): ?int
+    public function getTtl(): int
     {
         $maxAge = $this->getMaxAge();
 
@@ -843,7 +843,7 @@ class Response
      *
      * @final
      */
-    public function getLastModified(): ?\DateTimeInterface
+    public function getLastModified(): \DateTimeInterface
     {
         return $this->headers->getDate('Last-Modified');
     }
@@ -880,7 +880,7 @@ class Response
      *
      * @final
      */
-    public function getEtag(): ?string
+    public function getEtag(): string
     {
         return $this->headers->get('ETag');
     }
