@@ -548,6 +548,7 @@ class MimeTypeExtensionGuesser implements ExtensionGuesserInterface
         'application/x-gramps-xml' => 'gramps',
         'application/x-gtar' => 'gtar',
         'application/x-hdf' => 'hdf',
+        'application/x-hwp' => 'hwp',
         'application/x-install-instructions' => 'install',
         'application/x-iso9660-image' => 'iso',
         'application/x-java-jnlp-file' => 'jnlp',
