@@ -172,7 +172,8 @@ class HeaderUtils
         }
 
         // filenameFallback is not ASCII.
-        if (!preg_match('/^[\x20-\x7e]*$/', $filenameFallback)) {
+        // fix: to match more ascii characters, for example Chinese、Janpniese
+        if (!preg_match('/^[\x00-\xff]*$/', $filenameFallback)) {
             throw new \InvalidArgumentException('The filename fallback must only contain ASCII characters.');
         }
 
