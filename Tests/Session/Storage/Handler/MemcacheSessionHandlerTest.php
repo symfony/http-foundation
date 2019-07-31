@@ -13,13 +13,14 @@ namespace Symfony\Component\HttpFoundation\Tests\Session\Storage\Handler;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\PhpUnit\ForwardCompatTestTrait;
-use Symfony\Component\HttpFoundation\Session\Storage\Handler\MemcachedSessionHandler;
+use Symfony\Component\HttpFoundation\Session\Storage\Handler\MemcacheSessionHandler;
 
 /**
- * @requires extension memcached
+ * @requires extension memcache
  * @group time-sensitive
+ * @group legacy
  */
-class MemcachedSessionHandlerTest extends TestCase
+class MemcacheSessionHandlerTest extends TestCase
 {
     use ForwardCompatTestTrait;
 
@@ -27,30 +28,29 @@ class MemcachedSessionHandlerTest extends TestCase
     const TTL = 1000;
 
     /**
-     * @var MemcachedSessionHandler
+     * @var MemcacheSessionHandler
      */
     protected $storage;
 
-    protected $memcached;
+    protected $memcache;
 
     private function doSetUp()
     {
-        parent::setUp();
-
-        if (version_compare(phpversion('memcached'), '2.2.0', '>=') && version_compare(phpversion('memcached'), '3.0.0b1', '<')) {
-            $this->markTestSkipped('Tests can only be run with memcached extension 2.1.0 or lower, or 3.0.0b1 or higher');
+        if (\defined('HHVM_VERSION')) {
+            $this->markTestSkipped('PHPUnit_MockObject cannot mock the Memcache class on HHVM. See https://github.com/sebastianbergmann/phpunit-mock-objects/pull/289');
         }
 
-        $this->memcached = $this->getMockBuilder('Memcached')->getMock();
-        $this->storage = new MemcachedSessionHandler(
-            $this->memcached,
+        parent::setUp();
+        $this->memcache = $this->getMockBuilder('Memcache')->getMock();
+        $this->storage = new MemcacheSessionHandler(
+            $this->memcache,
             ['prefix' => self::PREFIX, 'expiretime' => self::TTL]
         );
     }
 
     private function doTearDown()
     {
-        $this->memcached = null;
+        $this->memcache = null;
         $this->storage = null;
         parent::tearDown();
     }
@@ -62,18 +62,12 @@ class MemcachedSessionHandlerTest extends TestCase
 
     public function testCloseSession()
     {
-        $this->memcached
-            ->expects($this->once())
-            ->method('quit')
-            ->willReturn(true)
-        ;
-
         $this->assertTrue($this->storage->close());
     }
 
     public function testReadSession()
     {
-        $this->memcached
+        $this->memcache
             ->expects($this->once())
             ->method('get')
             ->with(self::PREFIX.'id')
@@ -84,10 +78,10 @@ class MemcachedSessionHandlerTest extends TestCase
 
     public function testWriteSession()
     {
-        $this->memcached
+        $this->memcache
             ->expects($this->once())
             ->method('set')
-            ->with(self::PREFIX.'id', 'data', $this->equalTo(time() + self::TTL, 2))
+            ->with(self::PREFIX.'id', 'data', 0, $this->equalTo(time() + self::TTL, 2))
             ->willReturn(true)
         ;
 
@@ -96,7 +90,7 @@ class MemcachedSessionHandlerTest extends TestCase
 
     public function testDestroySession()
     {
-        $this->memcached
+        $this->memcache
             ->expects($this->once())
             ->method('delete')
             ->with(self::PREFIX.'id')
@@ -117,7 +111,7 @@ class MemcachedSessionHandlerTest extends TestCase
     public function testSupportedOptions($options, $supported)
     {
         try {
-            new MemcachedSessionHandler($this->memcached, $options);
+            new MemcacheSessionHandler($this->memcache, $options);
             $this->assertTrue($supported);
         } catch (\InvalidArgumentException $e) {
             $this->assertFalse($supported);
@@ -136,9 +130,9 @@ class MemcachedSessionHandlerTest extends TestCase
 
     public function testGetConnection()
     {
-        $method = new \ReflectionMethod($this->storage, 'getMemcached');
+        $method = new \ReflectionMethod($this->storage, 'getMemcache');
         $method->setAccessible(true);
 
-        $this->assertInstanceOf('\Memcached', $method->invoke($this->storage));
+        $this->assertInstanceOf('\Memcache', $method->invoke($this->storage));
     }
 }
