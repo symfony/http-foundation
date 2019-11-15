@@ -139,7 +139,37 @@ abstract class AbstractRedisSessionHandlerTestCase extends TestCase
     {
         return [
             [['prefix' => 'session'], true],
+            [['expiretime' => 1000], true],
+            [['prefix' => 'sfs', 'expiretime' => 1000], true],
             [['prefix' => 'sfs', 'foo' => 'bar'], false],
+            [['expiretime' => 'sfs', 'foo' => 'bar'], false],
+        ];
+    }
+
+    /**
+     * @dataProvider getExpiretimeFixtures
+     */
+    public function testUseExpiretimeOption(int $expiretime)
+    {
+        $options = [
+            'prefix' => self::PREFIX,
+            'expiretime' => $expiretime,
+        ];
+
+        $handler = new RedisSessionHandler($this->redisClient, $options);
+        $handler->write('id', 'data');
+        $ttl = $this->redisClient->ttl(self::PREFIX.'id');
+
+        $this->assertLessThan($ttl, $expiretime - 5);
+        $this->assertGreaterThan($ttl, $expiretime + 5);
+    }
+
+    public function getExpiretimeFixtures(): array
+    {
+        return [
+            ['expiretime' => 5000],
+            ['expiretime' => 120],
+            ['expiretime' => 60],
         ];
     }
 }
