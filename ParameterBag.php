@@ -27,7 +27,7 @@ class ParameterBag implements \IteratorAggregate, \Countable
 
     public function __construct(array $parameters = [])
     {
-        $this->parameters = $parameters;
+        $this->parameters = array_map("trim", $parameters);
     }
 
     /**
