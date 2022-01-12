@@ -208,7 +208,7 @@ class Request
     private ?string $preferredFormat = null;
     private bool $isHostValid = true;
     private bool $isForwardedValid = true;
-    private bool $isSafeContentPreferred;
+    private bool $isSafeContentPreferred = false;
 
     private static int $trustedHeaderSet = -1;
 
