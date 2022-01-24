@@ -8,6 +8,7 @@ CHANGELOG
  * Add the `litespeed_finish_request` method to work with Litespeed
  * Deprecate `upload_progress.*` and `url_rewriter.tags` session options
  * Allow setting session options via DSN
+ * Add cache header stale-while-revalidate and stale-if-error RFC5861 support
 
 5.3
 ---
