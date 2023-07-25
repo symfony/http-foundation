@@ -263,6 +263,8 @@ class RequestTest extends TestCase
         // Fragment should not be included in the URI
         $request = Request::create('http://test.com/foo#bar');
         $this->assertEquals('http://test.com/foo', $request->getUri());
+
+        Request::create('/admin/reports/memcache/default/memcache:11211');
     }
 
     public function testCreateWithRequestUri()

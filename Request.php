@@ -340,6 +340,9 @@ class Request
         $server['REQUEST_METHOD'] = strtoupper($method);
 
         $components = parse_url($uri);
+        if (!$components) {
+            $components = [];
+        }
         if (isset($components['host'])) {
             $server['SERVER_NAME'] = $components['host'];
             $server['HTTP_HOST'] = $components['host'];
