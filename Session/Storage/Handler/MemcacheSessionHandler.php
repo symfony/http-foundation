@@ -56,7 +56,7 @@ class MemcacheSessionHandler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function open($savePath, $sessionName)
+    public function open($savePath, $sessionName): bool
     {
         return true;
     }
@@ -64,7 +64,7 @@ class MemcacheSessionHandler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function close()
+    public function close(): bool
     {
         return true;
     }
@@ -72,7 +72,7 @@ class MemcacheSessionHandler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function read($sessionId)
+    public function read($sessionId): string
     {
         return $this->memcache->get($this->prefix.$sessionId) ?: '';
     }
@@ -80,7 +80,7 @@ class MemcacheSessionHandler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function write($sessionId, $data)
+    public function write($sessionId, $data): bool
     {
         return $this->memcache->set($this->prefix.$sessionId, $data, 0, time() + $this->ttl);
     }
@@ -88,7 +88,7 @@ class MemcacheSessionHandler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function destroy($sessionId)
+    public function destroy($sessionId): bool
     {
         $this->memcache->delete($this->prefix.$sessionId);
 
@@ -98,7 +98,7 @@ class MemcacheSessionHandler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function gc($maxlifetime)
+    public function gc($maxlifetime): bool
     {
         // not required here because memcache will auto expire the records anyhow.
         return true;

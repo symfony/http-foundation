@@ -41,7 +41,7 @@ interface SessionHandlerInterface
      *
      * @return bool true on success, false on failure
      */
-    public function open($savePath, $sessionName);
+    public function open($savePath, $sessionName): bool;
 
     /**
      * Closes the current session.
@@ -50,7 +50,7 @@ interface SessionHandlerInterface
      *
      * @return bool true on success, false on failure
      */
-    public function close();
+    public function close(): bool;
 
     /**
      * Reads the session data.
@@ -61,7 +61,7 @@ interface SessionHandlerInterface
      *
      * @return string Same session data as passed in write() or empty string when non-existent or on failure
      */
-    public function read($sessionId);
+    public function read($sessionId): string;
 
     /**
      * Writes the session data to the storage.
@@ -76,7 +76,7 @@ interface SessionHandlerInterface
      *
      * @return bool true on success, false on failure
      */
-    public function write($sessionId, $data);
+    public function write($sessionId, $data): bool;
 
     /**
      * Destroys a session.
@@ -87,7 +87,7 @@ interface SessionHandlerInterface
      *
      * @return bool true on success, false on failure
      */
-    public function destroy($sessionId);
+    public function destroy($sessionId): bool;
 
     /**
      * Cleans up expired sessions (garbage collection).
@@ -98,5 +98,5 @@ interface SessionHandlerInterface
      *
      * @return bool true on success, false on failure
      */
-    public function gc($maxlifetime);
+    public function gc($maxlifetime): bool;
 }

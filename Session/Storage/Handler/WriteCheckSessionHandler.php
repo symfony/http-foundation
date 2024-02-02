@@ -33,7 +33,7 @@ class WriteCheckSessionHandler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function close()
+    public function close(): bool
     {
         return $this->wrappedSessionHandler->close();
     }
@@ -41,7 +41,7 @@ class WriteCheckSessionHandler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function destroy($sessionId)
+    public function destroy($sessionId): bool
     {
         return $this->wrappedSessionHandler->destroy($sessionId);
     }
@@ -49,7 +49,7 @@ class WriteCheckSessionHandler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function gc($maxlifetime)
+    public function gc($maxlifetime): bool
     {
         return $this->wrappedSessionHandler->gc($maxlifetime);
     }
@@ -57,7 +57,7 @@ class WriteCheckSessionHandler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function open($savePath, $sessionName)
+    public function open($savePath, $sessionName): bool
     {
         return $this->wrappedSessionHandler->open($savePath, $sessionName);
     }
@@ -65,7 +65,7 @@ class WriteCheckSessionHandler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function read($sessionId)
+    public function read($sessionId): string
     {
         $session = $this->wrappedSessionHandler->read($sessionId);
 
@@ -77,7 +77,7 @@ class WriteCheckSessionHandler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function write($sessionId, $data)
+    public function write($sessionId, $data): bool
     {
         if (isset($this->readSessions[$sessionId]) && $data === $this->readSessions[$sessionId]) {
             return true;

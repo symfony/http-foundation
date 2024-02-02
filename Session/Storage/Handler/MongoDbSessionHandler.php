@@ -85,7 +85,7 @@ class MongoDbSessionHandler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function open($savePath, $sessionName)
+    public function open($savePath, $sessionName): bool
     {
         return true;
     }
@@ -93,7 +93,7 @@ class MongoDbSessionHandler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function close()
+    public function close(): bool
     {
         return true;
     }
@@ -101,7 +101,7 @@ class MongoDbSessionHandler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function destroy($sessionId)
+    public function destroy($sessionId): bool
     {
         $methodName = $this->mongo instanceof \MongoDB\Client ? 'deleteOne' : 'remove';
 
@@ -115,7 +115,7 @@ class MongoDbSessionHandler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function gc($maxlifetime)
+    public function gc($maxlifetime): bool
     {
         $methodName = $this->mongo instanceof \MongoDB\Client ? 'deleteMany' : 'remove';
 
@@ -129,7 +129,7 @@ class MongoDbSessionHandler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function write($sessionId, $data)
+    public function write($sessionId, $data): bool
     {
         $expiry = $this->createDateTime(time() + (int) ini_get('session.gc_maxlifetime'));
 
@@ -161,7 +161,7 @@ class MongoDbSessionHandler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function read($sessionId)
+    public function read($sessionId): string
     {
         $dbData = $this->getCollection()->findOne(array(
             $this->options['id_field'] => $sessionId,
