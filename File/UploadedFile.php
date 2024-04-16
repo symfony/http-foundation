@@ -248,8 +248,14 @@ class UploadedFile extends File
     /**
      * Returns an informative upload error message.
      */
-    public function getErrorMessage(): string
+    public function getErrorMessage(): ?string
     {
+        $errorCode = $this->error;
+
+        if ($errorCode === \UPLOAD_ERR_OK) {
+            return null;
+        }
+
         static $errors = [
             \UPLOAD_ERR_INI_SIZE => 'The file "%s" exceeds your upload_max_filesize ini directive (limit is %d KiB).',
             \UPLOAD_ERR_FORM_SIZE => 'The file "%s" exceeds the upload limit defined in your form.',
@@ -260,7 +266,6 @@ class UploadedFile extends File
             \UPLOAD_ERR_EXTENSION => 'File upload was stopped by a PHP extension.',
         ];
 
-        $errorCode = $this->error;
         $maxFilesize = \UPLOAD_ERR_INI_SIZE === $errorCode ? self::getMaxFilesize() / 1024 : 0;
         $message = $errors[$errorCode] ?? 'The file "%s" was not uploaded due to an unknown error.';
 
