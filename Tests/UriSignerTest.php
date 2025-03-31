@@ -13,7 +13,10 @@ namespace Symfony\Component\HttpFoundation\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\MockClock;
+use Symfony\Component\HttpFoundation\Exception\ExpiredSignedUriException;
 use Symfony\Component\HttpFoundation\Exception\LogicException;
+use Symfony\Component\HttpFoundation\Exception\UnsignedUriException;
+use Symfony\Component\HttpFoundation\Exception\UnverifiedSignedUriException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\UriSigner;
 
@@ -227,5 +230,35 @@ class UriSignerTest extends TestCase
     {
         $signer = new UriSigner('foobar');
         $this->assertTrue($signer->check('http://example.com/foo?_hash=rIOcC%2FF3DoEGo%2FvnESjSp7uU9zA9S%2F%2BOLhxgMexoPUM%3D&baz=bay&foo=bar'));
+    }
+
+    public function testVerifyUnSignedUri()
+    {
+        $signer = new UriSigner('foobar');
+        $uri = 'http://example.com/foo';
+
+        $this->expectException(UnsignedUriException::class);
+
+        $signer->verify($uri);
+    }
+
+    public function testVerifyUnverifiedUri()
+    {
+        $signer = new UriSigner('foobar');
+        $uri = 'http://example.com/foo?_hash=invalid';
+
+        $this->expectException(UnverifiedSignedUriException::class);
+
+        $signer->verify($uri);
+    }
+
+    public function testVerifyExpiredUri()
+    {
+        $signer = new UriSigner('foobar');
+        $uri = $signer->sign('http://example.com/foo', 123456);
+
+        $this->expectException(ExpiredSignedUriException::class);
+
+        $signer->verify($uri);
     }
 }

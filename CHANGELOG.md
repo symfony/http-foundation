@@ -9,6 +9,7 @@ CHANGELOG
  * Add support for `valkey:` / `valkeys:` schemes for sessions
  * `Request::getPreferredLanguage()` now favors a more preferred language above exactly matching a locale
  * Allow `UriSigner` to use a `ClockInterface`
+ * Add `UriSigner::verify()`
 
 7.2
 ---
