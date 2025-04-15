@@ -8,6 +8,7 @@ CHANGELOG
  * Add `EventStreamResponse` and `ServerEvent` classes to streamline server event streaming
  * Add support for `valkey:` / `valkeys:` schemes for sessions
  * `Request::getPreferredLanguage()` now favors a more preferred language above exactly matching a locale
+ * Allow `UriSigner` to use a `ClockInterface`
 
 7.2
 ---

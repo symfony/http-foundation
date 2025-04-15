@@ -12,6 +12,7 @@
 namespace Symfony\Component\HttpFoundation\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Clock\MockClock;
 use Symfony\Component\HttpFoundation\Exception\LogicException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\UriSigner;
@@ -193,6 +194,29 @@ class UriSignerTest extends TestCase
         $relativeUriFromNow2 = $signer->sign('http://example.com/foo?foo=bar', new \DateInterval('PT3S'));
         $relativeUriFromNow3 = $signer->sign('http://example.com/foo?foo=bar&0=integer', new \DateInterval('PT3S'));
         sleep(10);
+
+        $this->assertFalse($signer->check($relativeUriFromNow1));
+        $this->assertFalse($signer->check($relativeUriFromNow2));
+        $this->assertFalse($signer->check($relativeUriFromNow3));
+    }
+
+    public function testCheckWithUriExpirationWithClock()
+    {
+        $clock = new MockClock();
+        $signer = new UriSigner('foobar', clock: $clock);
+
+        $this->assertFalse($signer->check($signer->sign('http://example.com/foo', new \DateTimeImmutable('2000-01-01 00:00:00'))));
+        $this->assertFalse($signer->check($signer->sign('http://example.com/foo?foo=bar', new \DateTimeImmutable('2000-01-01 00:00:00'))));
+        $this->assertFalse($signer->check($signer->sign('http://example.com/foo?foo=bar&0=integer', new \DateTimeImmutable('2000-01-01 00:00:00'))));
+
+        $this->assertFalse($signer->check($signer->sign('http://example.com/foo', 1577836800))); // 2000-01-01
+        $this->assertFalse($signer->check($signer->sign('http://example.com/foo?foo=bar', 1577836800))); // 2000-01-01
+        $this->assertFalse($signer->check($signer->sign('http://example.com/foo?foo=bar&0=integer', 1577836800))); // 2000-01-01
+
+        $relativeUriFromNow1 = $signer->sign('http://example.com/foo', new \DateInterval('PT3S'));
+        $relativeUriFromNow2 = $signer->sign('http://example.com/foo?foo=bar', new \DateInterval('PT3S'));
+        $relativeUriFromNow3 = $signer->sign('http://example.com/foo?foo=bar&0=integer', new \DateInterval('PT3S'));
+        $clock->sleep(10);
 
         $this->assertFalse($signer->check($relativeUriFromNow1));
         $this->assertFalse($signer->check($relativeUriFromNow2));

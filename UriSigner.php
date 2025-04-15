@@ -11,6 +11,7 @@
 
 namespace Symfony\Component\HttpFoundation;
 
+use Psr\Clock\ClockInterface;
 use Symfony\Component\HttpFoundation\Exception\LogicException;
 
 /**
@@ -26,6 +27,7 @@ class UriSigner
         #[\SensitiveParameter] private string $secret,
         private string $hashParameter = '_hash',
         private string $expirationParameter = '_expiration',
+        private ?ClockInterface $clock = null,
     ) {
         if (!$secret) {
             throw new \InvalidArgumentException('A non-empty secret is required.');
@@ -109,7 +111,7 @@ class UriSigner
         }
 
         if ($expiration = $params[$this->expirationParameter] ?? false) {
-            return time() < $expiration;
+            return $this->now()->getTimestamp() < $expiration;
         }
 
         return true;
@@ -153,9 +155,14 @@ class UriSigner
         }
 
         if ($expiration instanceof \DateInterval) {
-            return \DateTimeImmutable::createFromFormat('U', time())->add($expiration)->format('U');
+            return $this->now()->add($expiration)->format('U');
         }
 
         return (string) $expiration;
+    }
+
+    private function now(): \DateTimeImmutable
+    {
+        return $this->clock?->now() ?? \DateTimeImmutable::createFromFormat('U', time());
     }
 }
