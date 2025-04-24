@@ -30,10 +30,14 @@ class StreamedResponseTest extends TestCase
         $chunks = ['foo', 'bar', 'baz'];
         $callback = (new StreamedResponse($chunks))->getCallback();
 
-        ob_start();
+        $buffer = '';
+        ob_start(function (string $chunk) use (&$buffer) {
+            $buffer .= $chunk;
+        });
         $callback();
 
-        $this->assertSame('foobarbaz', ob_get_clean());
+        ob_get_clean();
+        $this->assertSame('foobarbaz', $buffer);
     }
 
     public function testPrepareWith11Protocol()
