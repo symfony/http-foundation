@@ -2402,6 +2402,8 @@ class RequestTest extends TestCase
             'trusted with via and protocol name' => ['HTTP/2.0', true, 'HTTP/1.0 fred, HTTP/1.1 nowhere.com (Apache/1.1)', 'HTTP/1.0'],
             'trusted with broken via' => ['HTTP/2.0', true, 'HTTP/1^0 foo', 'HTTP/2.0'],
             'trusted with partially-broken via' => ['HTTP/2.0', true, '1.0 fred, foo', 'HTTP/1.0'],
+            'trusted with simple via' => ['HTTP/2.0', true, 'HTTP/1.0', 'HTTP/1.0'],
+            'trusted with only version via' => ['HTTP/2.0', true, '1.0', 'HTTP/1.0'],
         ];
     }
 
