@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+7.4
+---
+
+ * Deprecate using `Request::sendHeaders()` after headers have already been sent; use a `StreamedResponse` instead
+
 7.3
 ---
 
