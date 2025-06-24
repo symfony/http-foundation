@@ -1064,7 +1064,7 @@ class Request
 
         $https = $this->server->get('HTTPS');
 
-        return $https && 'off' !== strtolower($https);
+        return $https && (!\is_string($https) || 'off' !== strtolower($https));
     }
 
     /**
