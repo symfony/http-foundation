@@ -1559,7 +1559,7 @@ class RequestTest extends TestCase
         yield '"fr_FR" is selected as "fr" is a similar dialect (2)' => ['fr_FR', 'ja-JP,fr;q=0.5,en_US;q=0.3', ['en_US', 'fr_FR']];
         yield '"fr_FR" is selected as "fr_CA" is a similar dialect and has a greater "q" compared to "en_US" (2)' => ['fr_FR', 'ja-JP,fr_CA;q=0.7,ru-ru;q=0.3', ['en_US', 'fr_FR']];
         yield '"fr_FR" is selected as "fr_CA" is a similar dialect and has a greater "q" compared to "en"' => ['fr_FR', 'ja-JP,fr_CA;q=0.7,en;q=0.5', ['en_US', 'fr_FR']];
-        yield '"fr_FR" is selected as is is an exact match as well as "en_US", but with a greater "q" parameter' => ['fr_FR', 'en-us;q=0.5,fr-fr', ['en_US', 'fr_FR']];
+        yield '"fr_FR" is selected as it is an exact match as well as "en_US", but with a greater "q" parameter' => ['fr_FR', 'en-us;q=0.5,fr-fr', ['en_US', 'fr_FR']];
         yield '"hi_IN" is selected as "hi_Latn_IN" is a similar dialect' => ['hi_IN', 'fr-fr,hi_Latn_IN;q=0.5', ['hi_IN', 'en_US']];
         yield '"hi_Latn_IN" is selected as "hi_IN" is a similar dialect' => ['hi_Latn_IN', 'fr-fr,hi_IN;q=0.5', ['hi_Latn_IN', 'en_US']];
         yield '"en_US" is selected as "en_Latn_US+variants+extensions" is a similar dialect' => ['en_US', 'en-latn-us-fonapi-u-nu-numerical-x-private,fr;q=0.5', ['fr_FR', 'en_US']];
