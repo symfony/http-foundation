@@ -32,7 +32,7 @@ class StreamedResponseTest extends TestCase
 
         $buffer = '';
         ob_start(function (string $chunk) use (&$buffer) {
-            $buffer .= $chunk;
+            return $buffer .= $chunk;
         });
         $callback();
 
