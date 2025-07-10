@@ -102,7 +102,7 @@ class IpUtils
             return self::setCacheResult($cacheKey, false);
         }
 
-        return self::setCacheResult($cacheKey, 0 === substr_compare(sprintf('%032b', ip2long($requestIp)), sprintf('%032b', ip2long($address)), 0, $netmask));
+        return self::setCacheResult($cacheKey, 0 === substr_compare(\sprintf('%032b', ip2long($requestIp)), \sprintf('%032b', ip2long($address)), 0, $netmask));
     }
 
     /**
@@ -182,7 +182,7 @@ class IpUtils
      */
     public static function anonymize(string $ip): string
     {
-        /**
+        /*
          * If the IP contains a % symbol, then it is a local-link address with scoping according to RFC 4007
          * In that case, we only care about the part before the % symbol, as the following functions, can only work with
          * the IP address itself. As the scope can leak information (containing interface name), we do not want to

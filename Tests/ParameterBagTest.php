@@ -192,7 +192,7 @@ class ParameterBagTest extends TestCase
      */
     public function testGetIntExceptionWithArray()
     {
-        $this->expectDeprecation(sprintf('Since symfony/http-foundation 6.3: Ignoring invalid values when using "%s::getInt(\'digits\')" is deprecated and will throw an "%s" in 7.0; use method "filter()" with flag "FILTER_NULL_ON_FAILURE" to keep ignoring them.', ParameterBag::class, UnexpectedValueException::class));
+        $this->expectDeprecation(\sprintf('Since symfony/http-foundation 6.3: Ignoring invalid values when using "%s::getInt(\'digits\')" is deprecated and will throw an "%s" in 7.0; use method "filter()" with flag "FILTER_NULL_ON_FAILURE" to keep ignoring them.', ParameterBag::class, UnexpectedValueException::class));
 
         $bag = new ParameterBag(['digits' => ['123']]);
         $result = $bag->getInt('digits', 0);
@@ -204,7 +204,7 @@ class ParameterBagTest extends TestCase
      */
     public function testGetIntExceptionWithInvalid()
     {
-        $this->expectDeprecation(sprintf('Since symfony/http-foundation 6.3: Ignoring invalid values when using "%s::getInt(\'word\')" is deprecated and will throw an "%s" in 7.0; use method "filter()" with flag "FILTER_NULL_ON_FAILURE" to keep ignoring them.', ParameterBag::class, UnexpectedValueException::class));
+        $this->expectDeprecation(\sprintf('Since symfony/http-foundation 6.3: Ignoring invalid values when using "%s::getInt(\'word\')" is deprecated and will throw an "%s" in 7.0; use method "filter()" with flag "FILTER_NULL_ON_FAILURE" to keep ignoring them.', ParameterBag::class, UnexpectedValueException::class));
 
         $bag = new ParameterBag(['word' => 'foo_BAR_012']);
         $result = $bag->getInt('word', 0);
@@ -213,7 +213,7 @@ class ParameterBagTest extends TestCase
 
     public function testGetString()
     {
-        $bag = new ParameterBag(['integer' => 123, 'bool_true' => true, 'bool_false' => false, 'string' => 'abc', 'stringable' => new class() implements \Stringable {
+        $bag = new ParameterBag(['integer' => 123, 'bool_true' => true, 'bool_false' => false, 'string' => 'abc', 'stringable' => new class implements \Stringable {
             public function __toString(): string
             {
                 return 'strval';
@@ -258,7 +258,7 @@ class ParameterBagTest extends TestCase
             'dec' => '256',
             'hex' => '0x100',
             'array' => ['bang'],
-            ]);
+        ]);
 
         $this->assertEmpty($bag->filter('nokey'), '->filter() should return empty by default if no key is found');
 
@@ -339,7 +339,7 @@ class ParameterBagTest extends TestCase
      */
     public function testGetBooleanExceptionWithInvalid()
     {
-        $this->expectDeprecation(sprintf('Since symfony/http-foundation 6.3: Ignoring invalid values when using "%s::getBoolean(\'invalid\')" is deprecated and will throw an "%s" in 7.0; use method "filter()" with flag "FILTER_NULL_ON_FAILURE" to keep ignoring them.', ParameterBag::class, UnexpectedValueException::class));
+        $this->expectDeprecation(\sprintf('Since symfony/http-foundation 6.3: Ignoring invalid values when using "%s::getBoolean(\'invalid\')" is deprecated and will throw an "%s" in 7.0; use method "filter()" with flag "FILTER_NULL_ON_FAILURE" to keep ignoring them.', ParameterBag::class, UnexpectedValueException::class));
 
         $bag = new ParameterBag(['invalid' => 'foo']);
         $result = $bag->getBoolean('invalid', 0);
