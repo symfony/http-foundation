@@ -46,7 +46,7 @@ class UriSigner
      *
      * The expiration is added as a query string parameter.
      */
-    public function sign(string $uri/*, \DateTimeInterface|\DateInterval|int|null $expiration = null*/): string
+    public function sign(string $uri/* , \DateTimeInterface|\DateInterval|int|null $expiration = null */): string
     {
         $expiration = null;
 
