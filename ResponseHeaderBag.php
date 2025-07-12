@@ -194,7 +194,7 @@ class ResponseHeaderBag extends HeaderBag
      */
     public function getCookies(string $format = self::COOKIES_FLAT): array
     {
-        if (!\in_array($format, [self::COOKIES_FLAT, self::COOKIES_ARRAY])) {
+        if (!\in_array($format, [self::COOKIES_FLAT, self::COOKIES_ARRAY], true)) {
             throw new \InvalidArgumentException(\sprintf('Format "%s" invalid (%s).', $format, implode(', ', [self::COOKIES_FLAT, self::COOKIES_ARRAY])));
         }
 
