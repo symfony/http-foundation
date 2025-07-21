@@ -2285,6 +2285,7 @@ b'])]
             ['OPTIONS', true],
             ['TRACE', true],
             ['CONNECT', false],
+            ['QUERY', true],
         ];
     }
 
@@ -2309,6 +2310,7 @@ b'])]
             ['OPTIONS', true],
             ['TRACE', true],
             ['CONNECT', false],
+            ['QUERY', true],
         ];
     }
 
@@ -2333,6 +2335,7 @@ b'])]
             ['OPTIONS', false],
             ['TRACE', false],
             ['CONNECT', false],
+            ['QUERY', true],
         ];
     }
 
