@@ -99,7 +99,7 @@ class UrlHelperTest extends TestCase
     }
 
     #[DataProvider('getGenerateAbsoluteUrlRequestContextData')]
-    public function testGenerateAbsoluteUrlWithoutRequestAndRequestContext($path)
+    public function testGenerateAbsoluteUrlWithoutRequestAndRequestContext($path, $baseUrl, $host, $scheme, $httpPort, $httpsPort, $expected)
     {
         if (!class_exists(RequestContext::class)) {
             $this->markTestSkipped('The Routing component is needed to run tests that depend on its request context.');
