@@ -11,6 +11,7 @@
 
 namespace Symfony\Component\HttpFoundation\Tests\Session;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBag;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
@@ -98,18 +99,14 @@ class SessionTest extends TestCase
         $this->assertEquals(1, $this->session->get('foo', 1));
     }
 
-    /**
-     * @dataProvider setProvider
-     */
+    #[DataProvider('setProvider')]
     public function testSet($key, $value)
     {
         $this->session->set($key, $value);
         $this->assertEquals($value, $this->session->get($key));
     }
 
-    /**
-     * @dataProvider setProvider
-     */
+    #[DataProvider('setProvider')]
     public function testHas($key, $value)
     {
         $this->session->set($key, $value);
@@ -125,18 +122,14 @@ class SessionTest extends TestCase
         $this->assertEquals([], $this->session->all());
     }
 
-    /**
-     * @dataProvider setProvider
-     */
+    #[DataProvider('setProvider')]
     public function testAll($key, $value, $result)
     {
         $this->session->set($key, $value);
         $this->assertEquals($result, $this->session->all());
     }
 
-    /**
-     * @dataProvider setProvider
-     */
+    #[DataProvider('setProvider')]
     public function testClear($key, $value)
     {
         $this->session->set('hi', 'fabien');
@@ -154,9 +147,7 @@ class SessionTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider setProvider
-     */
+    #[DataProvider('setProvider')]
     public function testRemove($key, $value)
     {
         $this->session->set('hi.world', 'have a nice day');

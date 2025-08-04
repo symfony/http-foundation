@@ -11,13 +11,13 @@
 
 namespace Symfony\Component\HttpFoundation\Tests;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * @group time-sensitive
- */
+#[Group('time-sensitive')]
 class ResponseTest extends ResponseTestCase
 {
     public function testToString()
@@ -879,9 +879,7 @@ class ResponseTest extends ResponseTestCase
         $this->assertFalse($response->isInvalid());
     }
 
-    /**
-     * @dataProvider getStatusCodeFixtures
-     */
+    #[DataProvider('getStatusCodeFixtures')]
     public function testSetStatusCode($code, $text, $expectedText)
     {
         $response = new Response();
@@ -1005,9 +1003,7 @@ class ResponseTest extends ResponseTestCase
         $this->assertNull($response->headers->get('Etag'), '->setEtag() removes Etags when call with null');
     }
 
-    /**
-     * @dataProvider validContentProvider
-     */
+    #[DataProvider('validContentProvider')]
     public function testSetContent($content)
     {
         $response = new Response();
@@ -1128,9 +1124,7 @@ class ResponseTest extends ResponseTestCase
         return $ianaCodesReasonPhrases;
     }
 
-    /**
-     * @dataProvider ianaCodesReasonPhrasesProvider
-     */
+    #[DataProvider('ianaCodesReasonPhrasesProvider')]
     public function testReasonPhraseDefaultsAgainstIana($code, $reasonPhrase)
     {
         $this->assertEquals($reasonPhrase, Response::$statusTexts[$code]);
