@@ -895,10 +895,10 @@ class ResponseTest extends ResponseTestCase
     {
         return [
             ['200', null, 'OK'],
-            ['200', false, ''],
+            ['200', '', ''],
             ['200', 'foo', 'foo'],
             ['199', null, 'unknown status'],
-            ['199', false, ''],
+            ['199', '', ''],
             ['199', 'foo', 'foo'],
         ];
     }
