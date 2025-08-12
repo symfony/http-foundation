@@ -100,14 +100,14 @@ class SessionTest extends TestCase
     }
 
     #[DataProvider('setProvider')]
-    public function testSet($key, $value)
+    public function testSet($key, $value, $result)
     {
         $this->session->set($key, $value);
         $this->assertEquals($value, $this->session->get($key));
     }
 
     #[DataProvider('setProvider')]
-    public function testHas($key, $value)
+    public function testHas($key, $value, $result)
     {
         $this->session->set($key, $value);
         $this->assertTrue($this->session->has($key));
@@ -130,7 +130,7 @@ class SessionTest extends TestCase
     }
 
     #[DataProvider('setProvider')]
-    public function testClear($key, $value)
+    public function testClear($key, $value, $result)
     {
         $this->session->set('hi', 'fabien');
         $this->session->set($key, $value);
@@ -148,7 +148,7 @@ class SessionTest extends TestCase
     }
 
     #[DataProvider('setProvider')]
-    public function testRemove($key, $value)
+    public function testRemove($key, $value, $result)
     {
         $this->session->set('hi.world', 'have a nice day');
         $this->session->set($key, $value);
