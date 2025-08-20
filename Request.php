@@ -1226,8 +1226,20 @@ class Request
 
     /**
      * Gets the format associated with the mime type.
+     *
+     *  Resolution order:
+     *   1) Exact match on the full MIME type (e.g. "application/json").
+     *   2) Match on the canonical MIME type (i.e. before the first ";" parameter).
+     *   3) If the type is "application/*+suffix", use the structured syntax suffix
+     *      mapping (e.g. "application/foo+json" → "json"), when available.
+     *   4) If $subtypeFallback is true and no match was found:
+     *      - return the MIME subtype (without "x-" prefix), provided it does not
+     *        contain a "+" (e.g. "application/x-yaml" → "yaml", "text/csv" → "csv").
+     *
+     * @param string|null $mimeType        The mime type to check
+     * @param bool        $subtypeFallback Whether to fall back to the subtype if no exact match is found
      */
-    public function getFormat(?string $mimeType): ?string
+    public function getFormat(?string $mimeType, bool $subtypeFallback = false): ?string
     {
         $canonicalMimeType = null;
         if ($mimeType && false !== $pos = strpos($mimeType, ';')) {
@@ -1244,6 +1256,27 @@ class Request
             }
             if (null !== $canonicalMimeType && \in_array($canonicalMimeType, (array) $mimeTypes, true)) {
                 return $format;
+            }
+        }
+
+        if (!$canonicalMimeType) {
+            $canonicalMimeType = $mimeType;
+        }
+
+        if (str_starts_with($canonicalMimeType, 'application/') && str_contains($canonicalMimeType, '+')) {
+            $suffix = substr(strrchr($canonicalMimeType, '+'), 1);
+            if (isset(static::getStructuredSuffixFormats()[$suffix])) {
+                return static::getStructuredSuffixFormats()[$suffix];
+            }
+        }
+
+        if ($subtypeFallback && str_contains($canonicalMimeType, '/')) {
+            [, $subtype] = explode('/', $canonicalMimeType, 2);
+            if (str_starts_with($subtype, 'x-')) {
+                $subtype = substr($subtype, 2);
+            }
+            if (!str_contains($subtype, '+')) {
+                return $subtype;
             }
         }
 
@@ -1919,6 +1952,42 @@ class Request
             'atom' => ['application/atom+xml'],
             'rss' => ['application/rss+xml'],
             'form' => ['application/x-www-form-urlencoded', 'multipart/form-data'],
+            'soap' => ['application/soap+xml'],
+            'problem' => ['application/problem+json'],
+            'hal' => ['application/hal+json', 'application/hal+xml'],
+            'jsonapi' => ['application/vnd.api+json'],
+            'yaml' => ['text/yaml', 'application/x-yaml'],
+            'wbxml' => ['application/vnd.wap.wbxml'],
+            'pdf' => ['application/pdf'],
+            'csv' => ['text/csv'],
+        ];
+    }
+
+    /**
+     * Structured MIME suffix fallback formats
+     *
+     * This mapping is used when no exact MIME match is found in $formats.
+     * It enables handling of types like application/soap+xml → 'xml'.
+     *
+     * @see https://datatracker.ietf.org/doc/html/rfc6839
+     * @see https://datatracker.ietf.org/doc/html/rfc7303
+     * @see https://www.iana.org/assignments/media-types/media-types.xhtml
+     *
+     * @return array<string, string>
+     */
+    private static function getStructuredSuffixFormats(): array
+    {
+        return [
+            'json' => 'json',
+            'xml' => 'xml',
+            'xhtml' => 'html',
+            'cbor' => 'cbor',
+            'zip' => 'zip',
+            'ber' => 'asn1',
+            'der' => 'asn1',
+            'tlv' => 'tlv',
+            'wbxml' => 'xml',
+            'yaml' => 'yaml',
         ];
     }
 
