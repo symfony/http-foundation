@@ -538,9 +538,7 @@ b'])]
         ];
     }
 
-    /**
-     * @dataProvider getFormatWithSubtypeFallbackProvider
-     */
+    #[DataProvider('getFormatWithSubtypeFallbackProvider')]
     public function testGetFormatFromMimeTypeWithSubtypeFallback($expectedFormat, $mimeTypes)
     {
         $request = new Request();

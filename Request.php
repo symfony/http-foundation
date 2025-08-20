@@ -1259,8 +1259,8 @@ class Request
             }
         }
 
-        if (!$canonicalMimeType) {
-            $canonicalMimeType = $mimeType;
+        if (!$canonicalMimeType ??= $mimeType) {
+            return null;
         }
 
         if (str_starts_with($canonicalMimeType, 'application/') && str_contains($canonicalMimeType, '+')) {
@@ -1964,8 +1964,6 @@ class Request
     }
 
     /**
-     * Structured MIME suffix fallback formats
-     *
      * This mapping is used when no exact MIME match is found in $formats.
      * It enables handling of types like application/soap+xml → 'xml'.
      *
