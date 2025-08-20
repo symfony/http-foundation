@@ -527,6 +527,37 @@ b'])]
             ['rdf', ['application/rdf+xml']],
             ['atom', ['application/atom+xml']],
             ['form', ['application/x-www-form-urlencoded', 'multipart/form-data']],
+            ['rss', ['application/rss+xml']],
+            ['soap', ['application/soap+xml']],
+            ['html', ['application/xhtml+xml']],
+            ['problem', ['application/problem+json']],
+            ['hal', ['application/hal+json', 'application/hal+xml']],
+            ['jsonapi', ['application/vnd.api+json']],
+            ['yaml', ['application/x-yaml', 'text/yaml']],
+            ['wbxml', ['application/vnd.wap.wbxml']],
+        ];
+    }
+
+    /**
+     * @dataProvider getFormatWithSubtypeFallbackProvider
+     */
+    public function testGetFormatFromMimeTypeWithSubtypeFallback($expectedFormat, $mimeTypes)
+    {
+        $request = new Request();
+        foreach ($mimeTypes as $mime) {
+            $this->assertEquals($expectedFormat, $request->getFormat($mime, true));
+        }
+    }
+
+    public static function getFormatWithSubtypeFallbackProvider()
+    {
+        return [
+            ['cbor', ['application/example+cbor']],
+            ['asn1', ['application/ber-stream+ber', 'application/secure-data+der']],
+            ['zip', ['application/foobar+zip']],
+            ['tlv', ['application/device-config+tlv']],
+            ['pdf', ['application/pdf']],
+            ['csv', ['text/csv']],
         ];
     }
 

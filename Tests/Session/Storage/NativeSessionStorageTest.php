@@ -192,6 +192,10 @@ class NativeSessionStorageTest extends TestCase
             'cookie_samesite' => 'lax',
         ];
 
+        if (\PHP_VERSION_ID >= 80500) {
+            $options['cookie_partitioned'] = false;
+        }
+
         $this->getStorage($options);
         $temp = session_get_cookie_params();
         $gco = [];

@@ -15,6 +15,7 @@ CHANGELOG
 
  * Deprecate using `Request::sendHeaders()` after headers have already been sent; use a `StreamedResponse` instead
  * Add support for the `QUERY` HTTP method
+ * Add support for structured MIME suffix
 
 7.3
 ---
