@@ -195,6 +195,28 @@ class Request
         self::HEADER_X_FORWARDED_PREFIX => 'X_FORWARDED_PREFIX',
     ];
 
+    /**
+     * This mapping is used when no exact MIME match is found in $formats.
+     *
+     * It enables mappings like application/soap+xml -> xml.
+     *
+     * @see https://datatracker.ietf.org/doc/html/rfc6839
+     * @see https://datatracker.ietf.org/doc/html/rfc7303
+     * @see https://www.iana.org/assignments/media-types/media-types.xhtml
+     */
+    private const STRUCTURED_SUFFIX_FORMATS = [
+        'json' => 'json',
+        'xml' => 'xml',
+        'xhtml' => 'html',
+        'cbor' => 'cbor',
+        'zip' => 'zip',
+        'ber' => 'asn1',
+        'der' => 'asn1',
+        'tlv' => 'tlv',
+        'wbxml' => 'xml',
+        'yaml' => 'yaml',
+    ];
+
     private bool $isIisRewrite = false;
 
     /**
@@ -1239,8 +1261,9 @@ class Request
      * @param string|null $mimeType        The mime type to check
      * @param bool        $subtypeFallback Whether to fall back to the subtype if no exact match is found
      */
-    public function getFormat(?string $mimeType, bool $subtypeFallback = false): ?string
+    public function getFormat(?string $mimeType/* , bool $subtypeFallback = false */): ?string
     {
+        $subtypeFallback = 2 <= \func_num_args() ? func_get_arg(1) : false;
         $canonicalMimeType = null;
         if ($mimeType && false !== $pos = strpos($mimeType, ';')) {
             $canonicalMimeType = trim(substr($mimeType, 0, $pos));
@@ -1265,8 +1288,8 @@ class Request
 
         if (str_starts_with($canonicalMimeType, 'application/') && str_contains($canonicalMimeType, '+')) {
             $suffix = substr(strrchr($canonicalMimeType, '+'), 1);
-            if (isset(static::getStructuredSuffixFormats()[$suffix])) {
-                return static::getStructuredSuffixFormats()[$suffix];
+            if (isset(self::STRUCTURED_SUFFIX_FORMATS[$suffix])) {
+                return self::STRUCTURED_SUFFIX_FORMATS[$suffix];
             }
         }
 
@@ -1960,32 +1983,6 @@ class Request
             'wbxml' => ['application/vnd.wap.wbxml'],
             'pdf' => ['application/pdf'],
             'csv' => ['text/csv'],
-        ];
-    }
-
-    /**
-     * This mapping is used when no exact MIME match is found in $formats.
-     * It enables handling of types like application/soap+xml → 'xml'.
-     *
-     * @see https://datatracker.ietf.org/doc/html/rfc6839
-     * @see https://datatracker.ietf.org/doc/html/rfc7303
-     * @see https://www.iana.org/assignments/media-types/media-types.xhtml
-     *
-     * @return array<string, string>
-     */
-    private static function getStructuredSuffixFormats(): array
-    {
-        return [
-            'json' => 'json',
-            'xml' => 'xml',
-            'xhtml' => 'html',
-            'cbor' => 'cbor',
-            'zip' => 'zip',
-            'ber' => 'asn1',
-            'der' => 'asn1',
-            'tlv' => 'tlv',
-            'wbxml' => 'xml',
-            'yaml' => 'yaml',
         ];
     }
 
