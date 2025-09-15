@@ -11,13 +11,12 @@
 
 namespace Symfony\Component\HttpFoundation\Exception;
 
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\WithHttpStatus;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-#[WithHttpStatus(Response::HTTP_FORBIDDEN)]
+#[WithHttpStatus(403)]
 final class ExpiredSignedUriException extends SignedUriException
 {
     /**
