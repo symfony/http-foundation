@@ -114,10 +114,11 @@ class File extends \SplFileInfo
 
     protected function getTargetFile(string $directory, ?string $name = null): self
     {
-        if (!is_dir($directory)) {
-            if (false === @mkdir($directory, 0o777, true) && !is_dir($directory)) {
-                throw new FileException(\sprintf('Unable to create the "%s" directory.', $directory));
+        if (!is_dir($directory) && !@mkdir($directory, 0o777, true) && !is_dir($directory)) {
+            if (is_file($directory)) {
+                throw new FileException(\sprintf('Unable to create the "%s" directory: a similarly-named file exists.', $directory));
             }
+            throw new FileException(\sprintf('Unable to create the "%s" directory.', $directory));
         } elseif (!is_writable($directory)) {
             throw new FileException(\sprintf('Unable to write in the "%s" directory.', $directory));
         }

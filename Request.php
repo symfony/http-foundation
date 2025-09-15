@@ -95,6 +95,8 @@ class Request
 
     /**
      * Query string parameters ($_GET).
+     *
+     * @var InputBag<string>
      */
     public InputBag $query;
 
@@ -110,6 +112,8 @@ class Request
 
     /**
      * Cookies ($_COOKIE).
+     *
+     * @var InputBag<string>
      */
     public InputBag $cookies;
 
