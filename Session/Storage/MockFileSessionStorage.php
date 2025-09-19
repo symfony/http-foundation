@@ -103,7 +103,7 @@ class MockFileSessionStorage extends MockArraySessionStorage
             $this->data = $data;
         }
 
-        // this is needed when the session object is re-used across multiple requests
+        // this is needed when the session object is reused across multiple requests
         // in functional tests.
         $this->started = false;
     }
