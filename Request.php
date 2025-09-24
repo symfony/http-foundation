@@ -1265,9 +1265,8 @@ class Request
      * @param string|null $mimeType        The mime type to check
      * @param bool        $subtypeFallback Whether to fall back to the subtype if no exact match is found
      */
-    public function getFormat(?string $mimeType/* , bool $subtypeFallback = false */): ?string
+    public function getFormat(?string $mimeType, bool $subtypeFallback = false): ?string
     {
-        $subtypeFallback = 2 <= \func_num_args() ? func_get_arg(1) : false;
         $canonicalMimeType = null;
         if ($mimeType && false !== $pos = strpos($mimeType, ';')) {
             $canonicalMimeType = trim(substr($mimeType, 0, $pos));
