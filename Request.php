@@ -1244,6 +1244,10 @@ class Request
 
         $method = strtoupper($method);
 
+        if (\in_array($method, ['GET', 'HEAD', 'CONNECT', 'TRACE'], true)) {
+            trigger_deprecation('symfony/http-foundation', '7.4', 'HTTP method override is deprecated for methods GET, HEAD, CONNECT and TRACE; it will be ignored in Symfony 8.0.', $method);
+        }
+
         if (self::$allowedHttpMethodOverride && !\in_array($method, self::$allowedHttpMethodOverride, true)) {
             return $this->method;
         }
