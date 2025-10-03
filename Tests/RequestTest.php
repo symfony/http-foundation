@@ -12,6 +12,8 @@
 namespace Symfony\Component\HttpFoundation\Tests;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
@@ -1508,6 +1510,8 @@ b'])]
         $this->assertEquals('/', $request->getPathInfo());
     }
 
+    #[IgnoreDeprecations]
+    #[Group('legacy')]
     public function testGetParameterPrecedence()
     {
         $request = new Request();
