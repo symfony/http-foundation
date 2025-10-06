@@ -468,8 +468,8 @@ class Request
         $dup->method = null;
         $dup->format = null;
 
-        if (!$dup->get('_format') && $this->get('_format')) {
-            $dup->attributes->set('_format', $this->get('_format'));
+        if (!$dup->attributes->has('_format') && $this->attributes->has('_format')) {
+            $dup->attributes->set('_format', $this->attributes->get('_format'));
         }
 
         if (!$dup->getRequestFormat(null)) {
@@ -679,10 +679,12 @@ class Request
      *
      * Order of precedence: PATH (routing placeholders or custom attributes), GET, POST
      *
-     * @internal use explicit input sources instead
+     * @deprecated since Symfony 7.4, use properties `->attributes`, `query` or `request` directly instead
      */
     public function get(string $key, mixed $default = null): mixed
     {
+        trigger_deprecation('symfony/http-foundation', '7.4', 'Request::get() is deprecated, use properties ->attributes, query or request directly instead.');
+
         if ($this !== $result = $this->attributes->get($key, $this)) {
             return $result;
         }
@@ -1109,10 +1111,8 @@ class Request
     {
         if ($this->isFromTrustedProxy() && $host = $this->getTrustedValues(self::HEADER_X_FORWARDED_HOST)) {
             $host = $host[0];
-        } elseif (!$host = $this->headers->get('HOST')) {
-            if (!$host = $this->server->get('SERVER_NAME')) {
-                $host = $this->server->get('SERVER_ADDR', '');
-            }
+        } else {
+            $host = $this->headers->get('HOST') ?: $this->server->get('SERVER_NAME') ?: $this->server->get('SERVER_ADDR', '');
         }
 
         // trim and remove port number from host
