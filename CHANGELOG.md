@@ -10,6 +10,7 @@ CHANGELOG
  * Add arguments `$v4Bytes` and `$v6Bytes` to `IpUtils::anonymize()`
  * Add argument `$partitioned` to `ResponseHeaderBag::clearCookie()`
  * Add argument `$expiration` to `UriSigner::sign()`
+ * Remove `Request::get()`, use properties `->attributes`, `query` or `request` directly instead
 
 7.4
 ---

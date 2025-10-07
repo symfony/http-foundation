@@ -671,36 +671,6 @@ class Request
     }
 
     /**
-     * Gets a "parameter" value from any bag.
-     *
-     * This method is mainly useful for libraries that want to provide some flexibility. If you don't need the
-     * flexibility in controllers, it is better to explicitly get request parameters from the appropriate
-     * public property instead (attributes, query, request).
-     *
-     * Order of precedence: PATH (routing placeholders or custom attributes), GET, POST
-     *
-     * @deprecated since Symfony 7.4, use properties `->attributes`, `query` or `request` directly instead
-     */
-    public function get(string $key, mixed $default = null): mixed
-    {
-        trigger_deprecation('symfony/http-foundation', '7.4', 'Request::get() is deprecated, use properties ->attributes, query or request directly instead.');
-
-        if ($this !== $result = $this->attributes->get($key, $this)) {
-            return $result;
-        }
-
-        if ($this->query->has($key)) {
-            return $this->query->all()[$key];
-        }
-
-        if ($this->request->has($key)) {
-            return $this->request->all()[$key];
-        }
-
-        return $default;
-    }
-
-    /**
      * Gets the Session.
      *
      * @throws SessionNotFoundException When session is not set properly

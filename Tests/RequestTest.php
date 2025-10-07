@@ -12,8 +12,6 @@
 namespace Symfony\Component\HttpFoundation\Tests;
 
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
@@ -1508,27 +1506,6 @@ b'])]
         $request->initialize([], [], [], [], [], $server);
 
         $this->assertEquals('/', $request->getPathInfo());
-    }
-
-    #[IgnoreDeprecations]
-    #[Group('legacy')]
-    public function testGetParameterPrecedence()
-    {
-        $request = new Request();
-        $request->attributes->set('foo', 'attr');
-        $request->query->set('foo', 'query');
-        $request->request->set('foo', 'body');
-
-        $this->assertSame('attr', $request->get('foo'));
-
-        $request->attributes->remove('foo');
-        $this->assertSame('query', $request->get('foo'));
-
-        $request->query->remove('foo');
-        $this->assertSame('body', $request->get('foo'));
-
-        $request->request->remove('foo');
-        $this->assertNull($request->get('foo'));
     }
 
     public function testGetPreferredLanguage()
