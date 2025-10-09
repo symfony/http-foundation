@@ -284,17 +284,12 @@ class Request
             return $request;
         }
 
-        if (\PHP_VERSION_ID >= 80400) {
-            try {
-                [$post, $files] = request_parse_body();
+        try {
+            [$post, $files] = request_parse_body();
 
-                $request->request->add($post);
-                $request->files->add($files);
-            } catch (\RequestParseBodyException) {
-            }
-        } elseif (str_starts_with($request->headers->get('CONTENT_TYPE', ''), 'application/x-www-form-urlencoded')) {
-            parse_str($request->getContent(), $data);
-            $request->request = new InputBag($data);
+            $request->request->add($post);
+            $request->files->add($files);
+        } catch (\RequestParseBodyException) {
         }
 
         return $request;
