@@ -20,6 +20,7 @@ CHANGELOG
  * Add support for structured MIME suffix
  * Deprecate using `Request::sendHeaders()` after headers have already been sent; use a `StreamedResponse` instead
  * Deprecate method `Request::get()`, use properties `->attributes`, `query` or `request` directly instead
+ * Make `Request::createFromGlobals()` parse the body of PUT, DELETE, PATCH and QUERY requests
 
 7.3
 ---

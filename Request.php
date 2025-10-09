@@ -280,9 +280,19 @@ class Request
     {
         $request = self::createRequestFromFactory($_GET, $_POST, [], $_COOKIE, $_FILES, $_SERVER);
 
-        if (str_starts_with($request->headers->get('CONTENT_TYPE', ''), 'application/x-www-form-urlencoded')
-            && \in_array(strtoupper($request->server->get('REQUEST_METHOD', 'GET')), ['PUT', 'DELETE', 'PATCH', 'QUERY'], true)
-        ) {
+        if (!\in_array($request->server->get('REQUEST_METHOD', 'GET'), ['PUT', 'DELETE', 'PATCH', 'QUERY'], true)) {
+            return $request;
+        }
+
+        if (\PHP_VERSION_ID >= 80400) {
+            try {
+                [$post, $files] = request_parse_body();
+
+                $request->request->add($post);
+                $request->files->add($files);
+            } catch (\RequestParseBodyException) {
+            }
+        } elseif (str_starts_with($request->headers->get('CONTENT_TYPE', ''), 'application/x-www-form-urlencoded')) {
             parse_str($request->getContent(), $data);
             $request->request = new InputBag($data);
         }
