@@ -30,6 +30,7 @@ class RequestTest extends TestCase
     {
         Request::setTrustedProxies([], -1);
         Request::setTrustedHosts([]);
+        Request::setAllowedHttpMethodOverride(null);
     }
 
     public function testInitialize()
@@ -250,6 +251,50 @@ class RequestTest extends TestCase
         // Fragment should not be included in the URI
         $request = Request::create('http://test.com/foo#bar');
         $this->assertEquals('http://test.com/foo', $request->getUri());
+    }
+
+    public function testHttpMethodOverrideRespectsAllowedListWithHeader()
+    {
+        $request = Request::create('http://example.com/', 'POST');
+        $request->headers->set('X-HTTP-METHOD-OVERRIDE', 'PATCH');
+
+        Request::setAllowedHttpMethodOverride(['PUT', 'PATCH']);
+
+        $this->assertSame('PATCH', $request->getMethod());
+    }
+
+    public function testHttpMethodOverrideDisallowedSkipsOverrideWithHeader()
+    {
+        $request = Request::create('http://example.com/', 'POST');
+        $request->headers->set('X-HTTP-METHOD-OVERRIDE', 'DELETE');
+
+        Request::setAllowedHttpMethodOverride(['PUT', 'PATCH']);
+
+        $this->assertSame('POST', $request->getMethod());
+    }
+
+    public function testHttpMethodOverrideDisabledWithEmptyAllowedList()
+    {
+        $request = Request::create('http://example.com/', 'POST');
+        $request->headers->set('X-HTTP-METHOD-OVERRIDE', 'PUT');
+
+        Request::setAllowedHttpMethodOverride([]);
+
+        $this->assertSame('POST', $request->getMethod());
+    }
+
+    public function testHttpMethodOverrideRespectsAllowedListWithParameter()
+    {
+        Request::enableHttpMethodParameterOverride();
+        Request::setAllowedHttpMethodOverride(['PUT']);
+
+        try {
+            $request = Request::create('http://example.com/', 'POST', ['_method' => 'PUT']);
+
+            $this->assertSame('PUT', $request->getMethod());
+        } finally {
+            (new \ReflectionProperty(Request::class, 'httpMethodParameterOverride'))->setValue(null, false);
+        }
     }
 
     public function testCreateWithRequestUri()
@@ -1029,6 +1074,18 @@ b'])]
         $request->setMethod('POST');
         $request->query->set('_method', ['delete', 'patch']);
         $this->assertSame('POST', $request->getMethod(), '->getMethod() returns the request method if invalid type is defined in query');
+    }
+
+    #[IgnoreDeprecations]
+    #[Group('legacy')]
+    public function testUnsafeMethodOverride()
+    {
+        $request = new Request();
+        $request->setMethod('POST');
+        $request->headers->set('X-HTTP-METHOD-OVERRIDE', 'get');
+
+        $this->expectUserDeprecationMessage('Since symfony/http-foundation 7.4: HTTP method override is deprecated for methods GET, HEAD, CONNECT and TRACE; it will be ignored in Symfony 8.0.');
+        $this->assertSame('GET', $request->getMethod());
     }
 
     #[DataProvider('getClientIpsProvider')]
