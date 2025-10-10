@@ -82,6 +82,13 @@ class Request
     protected static bool $httpMethodParameterOverride = false;
 
     /**
+     * The HTTP methods that can be overridden.
+     *
+     * @var uppercase-string[]|null
+     */
+    protected static ?array $allowedHttpMethodOverride = null;
+
+    /**
      * Custom parameters.
      */
     public ParameterBag $attributes;
@@ -681,6 +688,30 @@ class Request
     }
 
     /**
+     * Sets the list of HTTP methods that can be overridden.
+     *
+     * Set to null to allow all methods to be overridden (default). Set to an
+     * empty array to disallow overrides entirely. Otherwise, provide the list
+     * of uppercased method names that are allowed.
+     *
+     * @param uppercase-string[]|null $methods
+     */
+    public static function setAllowedHttpMethodOverride(?array $methods): void
+    {
+        self::$allowedHttpMethodOverride = $methods;
+    }
+
+    /**
+     * Gets the list of HTTP methods that can be overridden.
+     *
+     * @return uppercase-string[]|null
+     */
+    public static function getAllowedHttpMethodOverride(): ?array
+    {
+        return self::$allowedHttpMethodOverride;
+    }
+
+    /**
      * Gets a "parameter" value from any bag.
      *
      * This method is mainly useful for libraries that want to provide some flexibility. If you don't need the
@@ -1197,7 +1228,7 @@ class Request
 
         $this->method = strtoupper($this->server->get('REQUEST_METHOD', 'GET'));
 
-        if ('POST' !== $this->method) {
+        if ('POST' !== $this->method || !(self::$allowedHttpMethodOverride ?? true)) {
             return $this->method;
         }
 
@@ -1213,11 +1244,11 @@ class Request
 
         $method = strtoupper($method);
 
-        if (\in_array($method, ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'PATCH', 'PURGE', 'TRACE', 'QUERY'], true)) {
-            return $this->method = $method;
+        if (self::$allowedHttpMethodOverride && !\in_array($method, self::$allowedHttpMethodOverride, true)) {
+            return $this->method;
         }
 
-        if (!preg_match('/^[A-Z]++$/D', $method)) {
+        if (\strlen($method) !== strspn($method, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')) {
             throw new SuspiciousOperationException('Invalid HTTP method override.');
         }
 
