@@ -1076,16 +1076,13 @@ b'])]
         $this->assertSame('POST', $request->getMethod(), '->getMethod() returns the request method if invalid type is defined in query');
     }
 
-    #[IgnoreDeprecations]
-    #[Group('legacy')]
     public function testUnsafeMethodOverride()
     {
         $request = new Request();
         $request->setMethod('POST');
         $request->headers->set('X-HTTP-METHOD-OVERRIDE', 'get');
 
-        $this->expectUserDeprecationMessage('Since symfony/http-foundation 7.4: HTTP method override is deprecated for methods GET, HEAD, CONNECT and TRACE; it will be ignored in Symfony 8.0.');
-        $this->assertSame('GET', $request->getMethod());
+        $this->assertSame('POST', $request->getMethod());
     }
 
     #[DataProvider('getClientIpsProvider')]
