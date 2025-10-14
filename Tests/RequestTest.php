@@ -297,6 +297,17 @@ class RequestTest extends TestCase
         }
     }
 
+    #[TestWith(['CONNECT'])]
+    #[TestWith(['GET'])]
+    #[TestWith(['HEAD'])]
+    #[TestWith(['TRACE'])]
+    public function testHttpMethodOverrideCannotBeAppliedToCertainMethods(string $httpOverrideMethod)
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        Request::setAllowedHttpMethodOverride([$httpOverrideMethod]);
+    }
+
     public function testCreateWithRequestUri()
     {
         $request = Request::create('http://test.com:80/foo');

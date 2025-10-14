@@ -693,6 +693,10 @@ class Request
      */
     public static function setAllowedHttpMethodOverride(?array $methods): void
     {
+        if (array_intersect($methods ?? [], ['GET', 'HEAD', 'CONNECT', 'TRACE'])) {
+            throw new \InvalidArgumentException('The HTTP methods "GET", "HEAD", "CONNECT", and "TRACE" cannot be overridden.');
+        }
+
         self::$allowedHttpMethodOverride = $methods;
     }
 
