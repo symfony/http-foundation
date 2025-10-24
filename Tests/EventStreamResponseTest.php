@@ -116,6 +116,28 @@ STR;
         $this->assertSameResponseContent("data: foo\n\n", $response);
     }
 
+    public function testStreamEventWith0Data()
+    {
+        $response = new EventStreamResponse(function () {
+            yield new ServerEvent(
+                data: '0',
+            );
+        });
+
+        $this->assertSameResponseContent("data: 0\n\n", $response);
+    }
+
+    public function testStreamEventEmptyStringIgnored()
+    {
+        $response = new EventStreamResponse(function () {
+            yield new ServerEvent(
+                data: '',
+            );
+        });
+
+        $this->assertSameResponseContent("\n", $response);
+    }
+
     private function assertSameResponseContent(string $expected, EventStreamResponse $response): void
     {
         ob_start();
