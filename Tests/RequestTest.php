@@ -1876,6 +1876,16 @@ class RequestTest extends TestCase
                 '',
                 '/foo/api/bar',
             ],
+            [
+                '/api/index.phpfoo',
+                [
+                    'SCRIPT_FILENAME' => '/var/www/api/index.php',
+                    'SCRIPT_NAME' => '/api/index.php',
+                    'PHP_SELF' => '/api/index.php',
+                ],
+                '/api/index.php',
+                '/foo',
+            ],
         ];
     }
 
