@@ -1369,15 +1369,21 @@ class Request
     /**
      * Associates a format with mime types.
      *
+     * @param string          $format    The format to set
      * @param string|string[] $mimeTypes The associated mime types (the preferred one must be the first as it will be used as the content type)
      */
     public function setFormat(?string $format, string|array $mimeTypes): void
     {
+        if (null === $format) {
+            trigger_deprecation('symfony/http-foundation', '7.4', 'Passing "null" as the first argument of "%s()" is deprecated. The argument will be non-nullable in Symfony 8.0.', __METHOD__);
+            $format = '';
+        }
+
         if (null === static::$formats) {
             static::initializeFormats();
         }
 
-        static::$formats[$format ?? ''] = (array) $mimeTypes;
+        static::$formats[$format] = (array) $mimeTypes;
     }
 
     /**
