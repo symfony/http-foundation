@@ -1335,13 +1335,13 @@ class Request
      *
      * @param string|string[] $mimeTypes The associated mime types (the preferred one must be the first as it will be used as the content type)
      */
-    public function setFormat(?string $format, string|array $mimeTypes): void
+    public function setFormat(string $format, string|array $mimeTypes): void
     {
         if (null === static::$formats) {
             static::initializeFormats();
         }
 
-        static::$formats[$format ?? ''] = (array) $mimeTypes;
+        static::$formats[$format] = (array) $mimeTypes;
     }
 
     /**

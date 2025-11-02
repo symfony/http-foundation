@@ -12,6 +12,7 @@ CHANGELOG
  * Add argument `$partitioned` to `ResponseHeaderBag::clearCookie()`
  * Add argument `$expiration` to `UriSigner::sign()`
  * Remove `Request::get()`, use properties `->attributes`, `query` or `request` directly instead
+ * Remove accepting null `$format` argument to `Request::setFormat()`
 
 7.4
 ---
@@ -24,6 +25,7 @@ CHANGELOG
  * Deprecate method `Request::get()`, use properties `->attributes`, `query` or `request` directly instead
  * Make `Request::createFromGlobals()` parse the body of PUT, DELETE, PATCH and QUERY requests
  * Deprecate HTTP method override for methods GET, HEAD, CONNECT and TRACE; it will be ignored in Symfony 8.0
+ * Deprecate accepting null `$format` argument to `Request::setFormat()`
 
 7.3
 ---
