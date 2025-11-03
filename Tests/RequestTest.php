@@ -2732,6 +2732,267 @@ class RequestTest extends TestCase
             [':path'],
         ];
     }
+
+    /**
+     * @dataProvider provideAcceptableContentTypesRfc9110
+     */
+    public function testGetAcceptableContentTypesRfc9110(string $acceptHeader, array $expectedContentTypes)
+    {
+        $request = new Request();
+        $request->headers->set('Accept', $acceptHeader);
+        $this->assertSame($expectedContentTypes, $request->getAcceptableContentTypes());
+    }
+
+    public static function provideAcceptableContentTypesRfc9110(): iterable
+    {
+        // Basic sorting by quality
+        yield 'quality sorting' => [
+            'text/html;q=0.9, application/json;q=0.8, text/plain;q=1.0',
+            ['text/plain', 'text/html', 'application/json'],
+        ];
+
+        // Parameters with RFC9110 canonical key generation (parameters normalized to lowercase)
+        yield 'parameters with canonical keys' => [
+            'text/plain, text/plain;format=flowed',
+            ['text/plain', 'text/plain;format=flowed'],
+        ];
+
+        yield 'parameters with quality and order' => [
+            'text/*;q=0.3, text/plain;q=0.7, text/plain;format=flowed, text/plain;format=fixed;q=0.4, */*;q=0.5',
+            ['text/plain;format=flowed', 'text/plain', '*/*', 'text/plain;format=fixed', 'text/*'],
+        ];
+
+        yield 'multiple parameters with order' => [
+            'text/html;level=1, text/html;level=2;q=0.4, text/html;q=0.7, text/*;q=0.3',
+            ['text/html;level=1', 'text/html', 'text/html;level=2', 'text/*'],
+        ];
+
+        // Case insensitivity for parameters - parameter names normalized to lowercase in canonical keys
+        yield 'case-insensitive param names normalized' => [
+            'text/plain;format=flowed;q=0.8, text/plain;Format=fixed',
+            ['text/plain;format=fixed', 'text/plain;format=flowed'],
+        ];
+
+        yield 'case-insensitive charset normalized' => [
+            'text/plain;Charset=utf-8, text/plain;charset=iso-8859-1;q=0.8',
+            ['text/plain;charset=utf-8', 'text/plain;charset=iso-8859-1'],
+        ];
+
+        // Quoted values with spaces
+        yield 'quoted value with space' => [
+            'text/plain;param="value with space"',
+            ['text/plain;param="value with space"'],
+        ];
+
+        yield 'quoted value with special chars' => [
+            'text/plain;param="value;with=special,chars"',
+            ['text/plain;param="value;with=special,chars"'],
+        ];
+
+        // Wildcards with parameters
+        yield 'wildcard type with parameter' => [
+            'text/*;format=flowed, text/plain',
+            ['text/*;format=flowed', 'text/plain'],
+        ];
+
+        yield 'wildcard all with parameter' => [
+            '*/*;q=0.5, text/html;q=0.9',
+            ['text/html', '*/*'],
+        ];
+
+        // Stability - original order when quality is equal
+        yield 'order preserved for equal quality' => [
+            'application/json, application/xml, text/html',
+            ['application/json', 'application/xml', 'text/html'],
+        ];
+
+        yield 'order preserved for equal quality with params' => [
+            'text/plain;format=flowed;q=0.8, text/plain;format=fixed;q=0.8',
+            ['text/plain;format=flowed', 'text/plain;format=fixed'],
+        ];
+
+        // Complex scenarios
+        yield 'complex with wildcards and params' => [
+            'text/html, application/xhtml+xml, application/xml;q=0.9, text/*;q=0.8, */*;q=0.7',
+            ['text/html', 'application/xhtml+xml', 'application/xml', 'text/*', '*/*'],
+        ];
+
+        yield 'charset parameter order' => [
+            'text/plain, text/plain;charset=utf-8',
+            ['text/plain', 'text/plain;charset=utf-8'],
+        ];
+
+        yield 'multiple params on same type' => [
+            'text/plain;charset=utf-8;format=flowed, text/plain;charset=utf-8, text/plain',
+            ['text/plain;charset=utf-8;format=flowed', 'text/plain;charset=utf-8', 'text/plain'],
+        ];
+
+        // Edge cases
+        yield 'single wildcard' => [
+            '*/*',
+            ['*/*'],
+        ];
+
+        yield 'type wildcard only' => [
+            'text/*',
+            ['text/*'],
+        ];
+
+        yield 'mixed case media types' => [
+            'Text/HTML, Application/JSON',
+            ['Text/HTML', 'Application/JSON'],
+        ];
+    }
+
+    /**
+     * @dataProvider providePreferredFormatRfc9110
+     */
+    public function testGetPreferredFormatRfc9110(string $acceptHeader, ?string $expectedFormat, ?string $default = 'html')
+    {
+        $request = new Request();
+        $request->headers->set('Accept', $acceptHeader);
+        $this->assertSame($expectedFormat, $request->getPreferredFormat($default));
+    }
+
+    public static function providePreferredFormatRfc9110(): iterable
+    {
+        // Basic format detection with parameters
+        yield 'json with charset parameter' => [
+            'application/json;charset=utf-8',
+            'json',
+            'html',
+        ];
+
+        yield 'xml with version parameter' => [
+            'application/xml;version=1.0',
+            'xml',
+            'html',
+        ];
+
+        // Quality-based preference
+        yield 'json preferred over xml by quality' => [
+            'application/json;q=0.9, application/xml;q=0.8',
+            'json',
+            'html',
+        ];
+
+        yield 'xml preferred over json by quality' => [
+            'application/xml;q=0.9, application/json;q=0.8',
+            'xml',
+            'html',
+        ];
+
+        // Specificity affects format selection
+        yield 'more specific parameter wins with equal quality' => [
+            'application/json, application/json;charset=utf-8',
+            'json',
+            'html',
+        ];
+
+        yield 'text/html with level parameter' => [
+            'text/html;level=1, application/json',
+            'html',
+            null,
+        ];
+
+        // Wildcards
+        yield 'wildcard type matches first known format' => [
+            'text/*',
+            'html',
+            'html',
+        ];
+
+        yield 'wildcard all matches default' => [
+            '*/*',
+            'html',
+            'html',
+        ];
+
+        yield 'wildcard with quality lower than specific' => [
+            'application/json;q=0.9, */*;q=0.5',
+            'json',
+            'html',
+        ];
+
+        // Multiple content types with RFC9110 parameter handling
+        yield 'complex accept with parameters' => [
+            'text/html;q=0.9, application/xhtml+xml, application/xml;q=0.8, text/*;q=0.7',
+            'html',
+            'html',
+        ];
+
+        yield 'json with multiple parameters' => [
+            'application/json;charset=utf-8;profile=strict, text/html',
+            'json',
+            'html',
+        ];
+
+        // Case sensitivity - media type case is preserved, must use lowercase for proper format matching
+        yield 'lowercase content type for format matching' => [
+            'application/json',
+            'json',
+            'html',
+        ];
+
+        yield 'lowercase with parameters for format matching' => [
+            'application/json;charset=utf-8',
+            'json',
+            'html',
+        ];
+
+        // Quoted parameter values
+        yield 'quoted parameter value' => [
+            'application/json;profile="http://example.com/schema"',
+            'json',
+            'html',
+        ];
+
+        // Order preservation with equal quality and specificity
+        yield 'first match wins with equal priority' => [
+            'application/json;q=0.9, application/xml;q=0.9',
+            'json',
+            'html',
+        ];
+
+        // No match scenarios
+        yield 'unknown content type returns default' => [
+            'application/vnd.custom+unknown',
+            'html',
+            'html',
+        ];
+
+        yield 'unknown with null default' => [
+            'application/vnd.custom+unknown',
+            null,
+            null,
+        ];
+
+        // Empty or malformed
+        yield 'empty accept header' => [
+            '',
+            'html',
+            'html',
+        ];
+
+        // Real-world examples
+        yield 'browser-like accept header' => [
+            'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'html',
+            'html',
+        ];
+
+        yield 'api client prefer json' => [
+            'application/json, text/plain, */*',
+            'json',
+            'html',
+        ];
+
+        yield 'rss/atom feeds' => [
+            'application/atom+xml;q=0.9, application/rss+xml;q=0.8',
+            'atom',
+            'html',
+        ];
+    }
 }
 
 class RequestContentProxy extends Request
