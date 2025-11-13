@@ -46,18 +46,15 @@ class AcceptHeader
      */
     public static function fromString(?string $headerValue): self
     {
-        $parts = HeaderUtils::split($headerValue ?? '', ',;=');
+        $items = [];
+        foreach (HeaderUtils::split($headerValue ?? '', ',;=') as $i => $parts) {
+            $part = array_shift($parts);
+            $item = new AcceptHeaderItem($part[0], HeaderUtils::combine($parts));
 
-        return new self(array_map(function ($subParts) {
-            static $index = 0;
-            $part = array_shift($subParts);
-            $attributes = HeaderUtils::combine($subParts);
+            $items[] = $item->setIndex($i);
+        }
 
-            $item = new AcceptHeaderItem($part[0], $attributes);
-            $item->setIndex($index++);
-
-            return $item;
-        }, $parts));
+        return new self($items);
     }
 
     /**
@@ -95,10 +92,11 @@ class AcceptHeader
             return null;
         }
 
-        usort($candidates, fn ($a, $b) =>
-            $this->getSpecificity($b, $queryItem) <=> $this->getSpecificity($a, $queryItem) // Descending specificity
-            ?: $b->getQuality() <=> $a->getQuality() // Descending quality
-            ?: $a->getIndex() <=> $b->getIndex() // Ascending index (stability)
+        usort(
+            $candidates,
+            fn ($a, $b) => $this->getSpecificity($b, $queryItem) <=> $this->getSpecificity($a, $queryItem) // Descending specificity
+                ?: $b->getQuality() <=> $a->getQuality() // Descending quality
+                ?: $a->getIndex() <=> $b->getIndex() // Ascending index (stability)
         );
 
         return reset($candidates);
