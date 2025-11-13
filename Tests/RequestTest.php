@@ -588,11 +588,11 @@ b'])]
             ['form', ['application/x-www-form-urlencoded', 'multipart/form-data']],
             ['rss', ['application/rss+xml']],
             ['soap', ['application/soap+xml']],
-            ['html', ['application/xhtml+xml']],
+            ['html', ['text/html', 'application/xhtml+xml']],
             ['problem', ['application/problem+json']],
             ['hal', ['application/hal+json', 'application/hal+xml']],
             ['jsonapi', ['application/vnd.api+json']],
-            ['yaml', ['application/x-yaml', 'text/yaml']],
+            ['yaml', ['text/yaml', 'application/x-yaml']],
             ['wbxml', ['application/vnd.wap.wbxml']],
         ];
     }
