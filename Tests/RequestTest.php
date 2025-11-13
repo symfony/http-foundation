@@ -31,6 +31,8 @@ class RequestTest extends TestCase
     {
         Request::setTrustedProxies([], -1);
         Request::setTrustedHosts([]);
+        Request::setFactory(null);
+        \Closure::bind(static fn () => self::$formats = null, null, Request::class)();
     }
 
     public function testInitialize()
