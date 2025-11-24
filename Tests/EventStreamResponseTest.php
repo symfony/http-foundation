@@ -29,6 +29,14 @@ class EventStreamResponseTest extends TestCase
         $this->assertNull($response->getRetry());
     }
 
+    public function testPresentOfExpiresHeader()
+    {
+        $response = new EventStreamResponse();
+
+        $this->assertTrue($response->headers->has('Expires'));
+        $this->assertSame('0', $response->headers->get('Expires'));
+    }
+
     public function testStreamSingleEvent()
     {
         $response = new EventStreamResponse(function () {
