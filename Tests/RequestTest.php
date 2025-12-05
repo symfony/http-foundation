@@ -1431,9 +1431,17 @@ b'])]
         $_SERVER['REQUEST_METHOD'] = $method;
         $_SERVER['CONTENT_TYPE'] = 'application/x-www-form-urlencoded';
 
-        $request = RequestContentProxy::createFromGlobals();
+        MockPhpStreamWrapper::setInputContent('content=mycontent');
+        stream_wrapper_unregister('php');
+        stream_wrapper_register('php', MockPhpStreamWrapper::class);
 
-        $this->assertEquals('mycontent', $request->request->get('content'));
+        try {
+            $request = Request::createFromGlobals();
+
+            $this->assertSame('mycontent', $request->request->get('content'));
+        } finally {
+            stream_wrapper_restore('php');
+        }
     }
 
     public function testOverrideGlobals()
@@ -3050,11 +3058,56 @@ b'])]
     }
 }
 
-class RequestContentProxy extends Request
+class MockPhpStreamWrapper
 {
-    public function getContent($asResource = false)
+    /** @var resource|null */
+    public $context;
+
+    private static string $inputContent = '';
+    private string $content = '';
+    private int $position = 0;
+
+    public static function setInputContent(string $content): void
     {
-        return http_build_query(['content' => 'mycontent'], '', '&');
+        self::$inputContent = $content;
+    }
+
+    public function stream_open(string $path, string $mode, int $options, ?string &$opened_path): bool
+    {
+        if ('php://input' === $path) {
+            $this->content = self::$inputContent;
+            $this->position = 0;
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public function stream_read(int $count): string
+    {
+        $result = substr($this->content, $this->position, $count);
+        $this->position += \strlen($result);
+
+        return $result;
+    }
+
+    public function stream_eof(): bool
+    {
+        return $this->position >= \strlen($this->content);
+    }
+
+    public function stream_stat(): array
+    {
+        return [
+            'size' => \strlen($this->content),
+            'mode' => 0,
+            'uid' => 0,
+            'gid' => 0,
+            'atime' => 0,
+            'mtime' => 0,
+            'ctime' => 0,
+        ];
     }
 }
 
