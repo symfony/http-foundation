@@ -3001,14 +3001,6 @@ b'])]
     }
 }
 
-class RequestContentProxy extends Request
-{
-    public function getContent($asResource = false)
-    {
-        return http_build_query(['content' => 'mycontent'], '', '&');
-    }
-}
-
 class NewRequest extends Request
 {
     public function getFoo()

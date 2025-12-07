@@ -285,21 +285,18 @@ class Request
      */
     public static function createFromGlobals(): static
     {
-        $request = self::createRequestFromFactory($_GET, $_POST, [], $_COOKIE, $_FILES, $_SERVER);
-
-        if (!\in_array($request->server->get('REQUEST_METHOD', 'GET'), ['PUT', 'DELETE', 'PATCH', 'QUERY'], true)) {
-            return $request;
+        if (!\in_array($_SERVER['REQUEST_METHOD'] ?? null, ['PUT', 'DELETE', 'PATCH', 'QUERY'], true)) {
+            return self::createRequestFromFactory($_GET, $_POST, [], $_COOKIE, $_FILES, $_SERVER);
         }
 
         try {
             [$post, $files] = request_parse_body();
-
-            $request->request->add($post);
-            $request->files->add($files);
         } catch (\RequestParseBodyException) {
+            $post = $_POST;
+            $files = $_FILES;
         }
 
-        return $request;
+        return self::createRequestFromFactory($_GET, $post, [], $_COOKIE, $files, $_SERVER);
     }
 
     /**
@@ -1496,10 +1493,8 @@ class Request
      */
     public function getContent(bool $asResource = false)
     {
-        $currentContentIsResource = \is_resource($this->content);
-
-        if (true === $asResource) {
-            if ($currentContentIsResource) {
+        if ($asResource) {
+            if (\is_resource($this->content)) {
                 rewind($this->content);
 
                 return $this->content;
@@ -1519,7 +1514,7 @@ class Request
             return fopen('php://input', 'r');
         }
 
-        if ($currentContentIsResource) {
+        if (\is_resource($this->content)) {
             rewind($this->content);
 
             return stream_get_contents($this->content);
