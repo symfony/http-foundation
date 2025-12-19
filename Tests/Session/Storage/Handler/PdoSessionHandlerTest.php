@@ -386,6 +386,46 @@ class PdoSessionHandlerTest extends TestCase
         }
     }
 
+    public function testSqlsrvDataBindingUsesStream()
+    {
+        $pdo = new MockPdo('sqlsrv', null, '10');
+        $boundData = [];
+
+        $mergeStmt = $this->createMock(\PDOStatement::class);
+        $selectStmt = $this->createMock(\PDOStatement::class);
+        $selectStmt->method('fetchAll')->willReturn([]);
+
+        $mergeStmt->method('bindParam')
+            ->willReturnCallback(function ($param, $data, $type = null) use (&$boundData) {
+                $boundData[$param] = ['data' => $data, 'type' => $type];
+
+                return true;
+            });
+
+        $mergeStmt->method('bindValue')->willReturn(true);
+        $mergeStmt->method('execute')->willReturn(true);
+
+        $pdo->prepareResult = fn ($statement) => str_starts_with($statement, 'MERGE') ? $mergeStmt : $selectStmt;
+
+        $storage = new PdoSessionHandler($pdo, ['lock_mode' => PdoSessionHandler::LOCK_NONE]);
+        $storage->open('', 'sid');
+        $storage->read('id');
+        $storage->write('id', 'test_data');
+        $storage->close();
+
+        $this->assertArrayHasKey(3, $boundData);
+        $this->assertIsResource($boundData[3]['data']);
+        $this->assertSame(\PDO::PARAM_LOB, $boundData[3]['type']);
+        rewind($boundData[3]['data']);
+        $this->assertSame('test_data', stream_get_contents($boundData[3]['data']));
+
+        $this->assertArrayHasKey(6, $boundData);
+        $this->assertIsResource($boundData[6]['data']);
+        $this->assertSame(\PDO::PARAM_LOB, $boundData[6]['type']);
+        rewind($boundData[6]['data']);
+        $this->assertSame('test_data', stream_get_contents($boundData[6]['data']));
+    }
+
     /**
      * @return resource
      */
@@ -404,11 +444,13 @@ class MockPdo extends \PDO
     public \Closure|\PDOStatement|false $prepareResult;
     private ?string $driverName;
     private bool|int $errorMode;
+    private ?string $serverVersion;
 
-    public function __construct(?string $driverName = null, ?int $errorMode = null)
+    public function __construct(?string $driverName = null, ?int $errorMode = null, ?string $serverVersion = null)
     {
         $this->driverName = $driverName;
         $this->errorMode = null !== $errorMode ?: \PDO::ERRMODE_EXCEPTION;
+        $this->serverVersion = $serverVersion;
     }
 
     public function getAttribute($attribute): mixed
@@ -419,6 +461,10 @@ class MockPdo extends \PDO
 
         if (\PDO::ATTR_DRIVER_NAME === $attribute) {
             return $this->driverName;
+        }
+
+        if (\PDO::ATTR_SERVER_VERSION === $attribute) {
+            return $this->serverVersion;
         }
 
         return parent::getAttribute($attribute);
