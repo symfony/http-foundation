@@ -396,7 +396,7 @@ class PdoSessionHandlerTest extends TestCase
         $selectStmt->method('fetchAll')->willReturn([]);
 
         $mergeStmt->method('bindParam')
-            ->willReturnCallback(function ($param, $data, $type = null) use (&$boundData) {
+            ->willReturnCallback(static function ($param, $data, $type = null) use (&$boundData) {
                 $boundData[$param] = ['data' => $data, 'type' => $type];
 
                 return true;
@@ -405,7 +405,7 @@ class PdoSessionHandlerTest extends TestCase
         $mergeStmt->method('bindValue')->willReturn(true);
         $mergeStmt->method('execute')->willReturn(true);
 
-        $pdo->prepareResult = fn ($statement) => str_starts_with($statement, 'MERGE') ? $mergeStmt : $selectStmt;
+        $pdo->prepareResult = static fn ($statement) => str_starts_with($statement, 'MERGE') ? $mergeStmt : $selectStmt;
 
         $storage = new PdoSessionHandler($pdo, ['lock_mode' => PdoSessionHandler::LOCK_NONE]);
         $storage->open('', 'sid');
