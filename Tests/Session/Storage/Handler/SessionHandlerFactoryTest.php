@@ -53,7 +53,7 @@ class SessionHandlerFactoryTest extends TestCase
      */
     public function testCreateRedisHandlerFromConnectionObject()
     {
-        $handler = SessionHandlerFactory::createHandler($this->createMock(\Redis::class));
+        $handler = SessionHandlerFactory::createHandler($this->createStub(\Redis::class));
         $this->assertInstanceOf(RedisSessionHandler::class, $handler);
     }
 
