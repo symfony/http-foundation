@@ -391,8 +391,8 @@ class PdoSessionHandlerTest extends TestCase
         $pdo = new MockPdo('sqlsrv', null, '10');
         $boundData = [];
 
-        $mergeStmt = $this->createMock(\PDOStatement::class);
-        $selectStmt = $this->createMock(\PDOStatement::class);
+        $mergeStmt = $this->createStub(\PDOStatement::class);
+        $selectStmt = $this->createStub(\PDOStatement::class);
         $selectStmt->method('fetchAll')->willReturn([]);
 
         $mergeStmt->method('bindParam')
