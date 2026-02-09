@@ -142,6 +142,9 @@ class BinaryFileResponseTest extends ResponseTestCase
     public static function provideRanges()
     {
         return [
+            ['bytes=0-', 0, 35, 'bytes 0-34/35'],
+            ['bytes=0-34', 0, 35, 'bytes 0-34/35'],
+            ['bytes=-35', 0, 35, 'bytes 0-34/35'],
             ['bytes=1-4', 1, 4, 'bytes 1-4/35'],
             ['bytes=-5', 30, 5, 'bytes 30-34/35'],
             ['bytes=30-', 30, 5, 'bytes 30-34/35'],
@@ -194,9 +197,6 @@ class BinaryFileResponseTest extends ResponseTestCase
     public static function provideFullFileRanges()
     {
         return [
-            ['bytes=0-'],
-            ['bytes=0-34'],
-            ['bytes=-35'],
             // Syntactical invalid range-request should also return the full resource
             ['bytes=20-10'],
             ['bytes=50-40'],
