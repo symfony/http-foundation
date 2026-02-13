@@ -393,4 +393,9 @@ class BinaryFileResponse extends Response
 
         return $this;
     }
+
+    public function shouldDeleteFileAfterSend(): bool
+    {
+        return $this->deleteFileAfterSend;
+    }
 }

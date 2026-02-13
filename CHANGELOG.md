@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+8.1
+---
+
+ * Add `BinaryFileResponse::shouldDeleteFileAfterSend()`
+
 8.0
 ---
 
