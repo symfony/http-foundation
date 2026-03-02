@@ -5,6 +5,7 @@ CHANGELOG
 ---
 
  * Add `BinaryFileResponse::shouldDeleteFileAfterSend()`
+ * Deprecate setting public properties of `Request` and `Response` objects directly; use setters or constructor arguments instead
 
 8.0
 ---
