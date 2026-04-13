@@ -229,7 +229,7 @@ class NativeSessionStorageTest extends TestCase
     {
         $this->expectUserDeprecationMessage('Since symfony/http-foundation 7.2: NativeSessionStorage\'s "trans_sid_tags" option is deprecated and will be ignored in Symfony 8.0.');
 
-        $previousErrorHandler = set_error_handler(function ($errno, $errstr) use (&$previousErrorHandler) {
+        $previousErrorHandler = set_error_handler(static function ($errno, $errstr) use (&$previousErrorHandler) {
             if ('ini_set(): Usage of session.trans_sid_tags INI setting is deprecated' !== $errstr) {
                 return $previousErrorHandler ? $previousErrorHandler(...\func_get_args()) : false;
             }

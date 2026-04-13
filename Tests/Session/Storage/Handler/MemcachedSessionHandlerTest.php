@@ -146,7 +146,7 @@ class MemcachedSessionHandlerTest extends TestCase
     private function getMemcachedMock(): MockObject&\Memcached
     {
         $r = new \ReflectionClass(\Memcached::class);
-        $methodsToMock = array_map(fn ($m) => $m->name, $r->getMethods(\ReflectionMethod::IS_PUBLIC));
+        $methodsToMock = array_map(static fn ($m) => $m->name, $r->getMethods(\ReflectionMethod::IS_PUBLIC));
         $methodsToMock = array_diff($methodsToMock, ['getDelayed', 'getDelayedByKey']);
 
         return $this->getMockBuilder(\Memcached::class)
