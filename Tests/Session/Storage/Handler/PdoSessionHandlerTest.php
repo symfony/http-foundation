@@ -157,19 +157,19 @@ class PdoSessionHandlerTest extends TestCase
         $selectStmt = $this->createMock(\PDOStatement::class);
         $insertStmt = $this->createMock(\PDOStatement::class);
 
-        $pdo->prepareResult = fn ($statement) => str_starts_with($statement, 'INSERT') ? $insertStmt : $selectStmt;
+        $pdo->prepareResult = static fn ($statement) => str_starts_with($statement, 'INSERT') ? $insertStmt : $selectStmt;
 
         $content = 'foobar';
         $stream = $this->createStream($content);
         $exception = null;
 
         $selectStmt->expects($this->atLeast(2))->method('fetchAll')
-            ->willReturnCallback(function () use (&$exception, $stream) {
+            ->willReturnCallback(static function () use (&$exception, $stream) {
                 return $exception ? [[$stream, time() + 42]] : [];
             });
 
         $insertStmt->expects($this->once())->method('execute')
-            ->willReturnCallback(function () use (&$exception) {
+            ->willReturnCallback(static function () use (&$exception) {
                 throw $exception = new \PDOException('', '23');
             });
 
@@ -332,7 +332,7 @@ class PdoSessionHandlerTest extends TestCase
         $schema = new Schema();
 
         $pdoSessionHandler = new PdoSessionHandler($this->getMemorySqlitePdo());
-        $pdoSessionHandler->configureSchema($schema, fn () => false);
+        $pdoSessionHandler->configureSchema($schema, static fn () => false);
         $this->assertFalse($schema->hasTable('sessions'));
     }
 
@@ -341,7 +341,7 @@ class PdoSessionHandlerTest extends TestCase
         $schema = new Schema();
 
         $pdoSessionHandler = new PdoSessionHandler($this->getMemorySqlitePdo());
-        $pdoSessionHandler->configureSchema($schema, fn () => true);
+        $pdoSessionHandler->configureSchema($schema, static fn () => true);
         $this->assertTrue($schema->hasTable('sessions'));
     }
 
@@ -351,7 +351,7 @@ class PdoSessionHandlerTest extends TestCase
         $schema->createTable('sessions');
 
         $pdoSessionHandler = new PdoSessionHandler($this->getMemorySqlitePdo());
-        $pdoSessionHandler->configureSchema($schema, fn () => true);
+        $pdoSessionHandler->configureSchema($schema, static fn () => true);
         $table = $schema->getTable('sessions');
         $this->assertEmpty($table->getColumns(), 'The table was not overwritten');
     }
@@ -377,7 +377,7 @@ class PdoSessionHandlerTest extends TestCase
 
     public function testTtl()
     {
-        foreach ([60, fn () => 60] as $ttl) {
+        foreach ([60, static fn () => 60] as $ttl) {
             $pdo = $this->getMemorySqlitePdo();
             $storage = new PdoSessionHandler($pdo, ['ttl' => $ttl]);
 
@@ -400,7 +400,7 @@ class PdoSessionHandlerTest extends TestCase
         $selectStmt->method('fetchAll')->willReturn([]);
 
         $mergeStmt->method('bindParam')
-            ->willReturnCallback(function ($param, $data, $type = null) use (&$boundData) {
+            ->willReturnCallback(static function ($param, $data, $type = null) use (&$boundData) {
                 $boundData[$param] = ['data' => $data, 'type' => $type];
 
                 return true;
@@ -409,7 +409,7 @@ class PdoSessionHandlerTest extends TestCase
         $mergeStmt->method('bindValue')->willReturn(true);
         $mergeStmt->method('execute')->willReturn(true);
 
-        $pdo->prepareResult = fn ($statement) => str_starts_with($statement, 'MERGE') ? $mergeStmt : $selectStmt;
+        $pdo->prepareResult = static fn ($statement) => str_starts_with($statement, 'MERGE') ? $mergeStmt : $selectStmt;
 
         $storage = new PdoSessionHandler($pdo, ['lock_mode' => PdoSessionHandler::LOCK_NONE]);
         $storage->open('', 'sid');

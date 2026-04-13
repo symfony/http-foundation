@@ -1711,7 +1711,7 @@ class RequestTest extends TestCase
         $this->assertFalse($request->hasSession());
         $this->assertFalse($request->hasSession(true));
 
-        $request->setSessionFactory(function () {});
+        $request->setSessionFactory(static function () {});
         $this->assertTrue($request->hasSession());
         $this->assertFalse($request->hasSession(true));
 
@@ -2242,7 +2242,7 @@ class RequestTest extends TestCase
 
     public function testFactory()
     {
-        Request::setFactory(fn (array $query = [], array $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = null) => new NewRequest());
+        Request::setFactory(static fn (array $query = [], array $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = null) => new NewRequest());
 
         $this->assertEquals('foo', Request::create('/')->getFoo());
 

@@ -167,7 +167,7 @@ class UploadedFile extends File
 
             $target = $this->getTargetFile($directory, $name);
 
-            set_error_handler(function ($type, $msg) use (&$error) { $error = $msg; });
+            set_error_handler(static function ($type, $msg) use (&$error) { $error = $msg; });
             try {
                 $moved = move_uploaded_file($this->getPathname(), $target);
             } finally {
@@ -177,7 +177,7 @@ class UploadedFile extends File
                 throw new FileException(\sprintf('Could not move the file "%s" to "%s" (%s).', $this->getPathname(), $target, strip_tags($error)));
             }
 
-            @chmod($target, 0666 & ~umask());
+            @chmod($target, 0o666 & ~umask());
 
             return $target;
         }

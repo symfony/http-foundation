@@ -173,7 +173,7 @@ class RequestMatcherTest extends TestCase
         $matcher = new RequestMatcher();
 
         $request = Request::create('/admin/foo');
-        $request->attributes->set('_controller', fn () => new Response('foo'));
+        $request->attributes->set('_controller', static fn () => new Response('foo'));
 
         $matcher->matchAttribute('_controller', 'babar');
         $this->assertFalse($matcher->matches($request));

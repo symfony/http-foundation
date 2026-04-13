@@ -223,7 +223,7 @@ class NativeSessionStorageTest extends TestCase
      */
     public function testTransSidTagsOption()
     {
-        $previousErrorHandler = set_error_handler(function ($errno, $errstr) use (&$previousErrorHandler) {
+        $previousErrorHandler = set_error_handler(static function ($errno, $errstr) use (&$previousErrorHandler) {
             if ('ini_set(): Usage of session.trans_sid_tags INI setting is deprecated' !== $errstr) {
                 return $previousErrorHandler ? $previousErrorHandler(...\func_get_args()) : false;
             }

@@ -19,7 +19,7 @@ class StreamedResponseTest extends TestCase
 {
     public function testConstructor()
     {
-        $response = new StreamedResponse(function () { echo 'foo'; }, 404, ['Content-Type' => 'text/plain']);
+        $response = new StreamedResponse(static function () { echo 'foo'; }, 404, ['Content-Type' => 'text/plain']);
 
         $this->assertEquals(404, $response->getStatusCode());
         $this->assertEquals('text/plain', $response->headers->get('Content-Type'));
@@ -27,7 +27,7 @@ class StreamedResponseTest extends TestCase
 
     public function testPrepareWith11Protocol()
     {
-        $response = new StreamedResponse(function () { echo 'foo'; });
+        $response = new StreamedResponse(static function () { echo 'foo'; });
         $request = Request::create('/');
         $request->server->set('SERVER_PROTOCOL', 'HTTP/1.1');
 
@@ -39,7 +39,7 @@ class StreamedResponseTest extends TestCase
 
     public function testPrepareWith10Protocol()
     {
-        $response = new StreamedResponse(function () { echo 'foo'; });
+        $response = new StreamedResponse(static function () { echo 'foo'; });
         $request = Request::create('/');
         $request->server->set('SERVER_PROTOCOL', 'HTTP/1.0');
 
@@ -51,7 +51,7 @@ class StreamedResponseTest extends TestCase
 
     public function testPrepareWithHeadRequest()
     {
-        $response = new StreamedResponse(function () { echo 'foo'; }, 200, ['Content-Length' => '123']);
+        $response = new StreamedResponse(static function () { echo 'foo'; }, 200, ['Content-Length' => '123']);
         $request = Request::create('/', 'HEAD');
 
         $response->prepare($request);
@@ -61,7 +61,7 @@ class StreamedResponseTest extends TestCase
 
     public function testPrepareWithCacheHeaders()
     {
-        $response = new StreamedResponse(function () { echo 'foo'; }, 200, ['Cache-Control' => 'max-age=600, public']);
+        $response = new StreamedResponse(static function () { echo 'foo'; }, 200, ['Cache-Control' => 'max-age=600, public']);
         $request = Request::create('/', 'GET');
 
         $response->prepare($request);
@@ -72,7 +72,7 @@ class StreamedResponseTest extends TestCase
     {
         $called = 0;
 
-        $response = new StreamedResponse(function () use (&$called) { ++$called; });
+        $response = new StreamedResponse(static function () use (&$called) { ++$called; });
 
         $response->sendContent();
         $this->assertEquals(1, $called);
@@ -91,30 +91,30 @@ class StreamedResponseTest extends TestCase
     public function testSetContent()
     {
         $this->expectException(\LogicException::class);
-        $response = new StreamedResponse(function () { echo 'foo'; });
+        $response = new StreamedResponse(static function () { echo 'foo'; });
         $response->setContent('foo');
     }
 
     public function testGetContent()
     {
-        $response = new StreamedResponse(function () { echo 'foo'; });
+        $response = new StreamedResponse(static function () { echo 'foo'; });
         $this->assertFalse($response->getContent());
     }
 
     public function testReturnThis()
     {
-        $response = new StreamedResponse(function () {});
+        $response = new StreamedResponse(static function () {});
         $this->assertInstanceOf(StreamedResponse::class, $response->sendContent());
         $this->assertInstanceOf(StreamedResponse::class, $response->sendContent());
 
-        $response = new StreamedResponse(function () {});
+        $response = new StreamedResponse(static function () {});
         $this->assertInstanceOf(StreamedResponse::class, $response->sendHeaders());
         $this->assertInstanceOf(StreamedResponse::class, $response->sendHeaders());
     }
 
     public function testSetNotModified()
     {
-        $response = new StreamedResponse(function () { echo 'foo'; });
+        $response = new StreamedResponse(static function () { echo 'foo'; });
         $modified = $response->setNotModified();
         $this->assertSame($response, $modified);
         $this->assertEquals(304, $modified->getStatusCode());
