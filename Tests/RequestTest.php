@@ -1424,7 +1424,7 @@ b'])]
         $this->disableHttpMethodParameterOverride();
     }
 
-    #[RequiresPhp('< 8.4')]
+    #[RequiresPhp('<8.4.0')]
     #[DataProvider('provideMethodsRequiringExplicitBodyParsing')]
     public function testFormUrlEncodedBodyParsing(string $method)
     {
