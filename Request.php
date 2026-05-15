@@ -116,7 +116,7 @@ class Request
      */
     public ParameterBag $attributes {
         set {
-            trigger_deprecation('symfony/http-foundation', '8.1', 'Directly setting property "attributes" of "%s" is deprecated; pass attributes as a constructor argument or call "initialize()" instead.', __CLASS__);
+            trigger_deprecation('symfony/http-foundation', '8.1', 'Directly setting property "attributes" of "%s" is deprecated; pass attributes as a constructor argument or call "initialize()" instead.', static::class);
 
             $this->attributes = $value;
         }
@@ -129,7 +129,7 @@ class Request
      */
     public InputBag $request {
         set {
-            trigger_deprecation('symfony/http-foundation', '8.1', 'Directly setting property "request" of "%s" is deprecated; pass the POST data as a constructor argument or call "initialize()" instead.', __CLASS__);
+            trigger_deprecation('symfony/http-foundation', '8.1', 'Directly setting property "request" of "%s" is deprecated; pass the POST data as a constructor argument or call "initialize()" instead.', static::class);
 
             $this->request = $value;
         }
@@ -142,7 +142,7 @@ class Request
      */
     public InputBag $query {
         set {
-            trigger_deprecation('symfony/http-foundation', '8.1', 'Directly setting property "query" of "%s" is deprecated; pass query parameters as a constructor argument or call "initialize()" instead.', __CLASS__);
+            trigger_deprecation('symfony/http-foundation', '8.1', 'Directly setting property "query" of "%s" is deprecated; pass query parameters as a constructor argument or call "initialize()" instead.', static::class);
 
             $this->query = $value;
         }
@@ -153,7 +153,7 @@ class Request
      */
     public ServerBag $server {
         set {
-            trigger_deprecation('symfony/http-foundation', '8.1', 'Directly setting property "server" of "%s" is deprecated; pass server parameters as a constructor argument or call "initialize()" instead.', __CLASS__);
+            trigger_deprecation('symfony/http-foundation', '8.1', 'Directly setting property "server" of "%s" is deprecated; pass server parameters as a constructor argument or call "initialize()" instead.', static::class);
 
             $this->server = $value;
         }
@@ -164,7 +164,7 @@ class Request
      */
     public FileBag $files {
         set {
-            trigger_deprecation('symfony/http-foundation', '8.1', 'Directly setting property "files" of "%s" is deprecated; pass files as a constructor argument or call "initialize()" instead.', __CLASS__);
+            trigger_deprecation('symfony/http-foundation', '8.1', 'Directly setting property "files" of "%s" is deprecated; pass files as a constructor argument or call "initialize()" instead.', static::class);
 
             $this->files = $value;
         }
@@ -177,7 +177,7 @@ class Request
      */
     public InputBag $cookies {
         set {
-            trigger_deprecation('symfony/http-foundation', '8.1', 'Directly setting property "cookies" of "%s" is deprecated; pass cookies as a constructor argument or call "initialize()" instead.', __CLASS__);
+            trigger_deprecation('symfony/http-foundation', '8.1', 'Directly setting property "cookies" of "%s" is deprecated; pass cookies as a constructor argument or call "initialize()" instead.', static::class);
 
             $this->cookies = $value;
         }
@@ -188,7 +188,7 @@ class Request
      */
     public HeaderBag $headers {
         set {
-            trigger_deprecation('symfony/http-foundation', '8.1', 'Directly setting property "headers" of "%s" is deprecated; pass header parameters as a constructor argument or call "initialize()" instead.', __CLASS__);
+            trigger_deprecation('symfony/http-foundation', '8.1', 'Directly setting property "headers" of "%s" is deprecated; pass header parameters as a constructor argument or call "initialize()" instead.', static::class);
 
             $this->headers = $value;
         }
@@ -2262,12 +2262,12 @@ class Request
         return '' === preg_replace('/[-a-zA-Z0-9_]++\.?/', '', $host);
     }
 
-    private static function setProperty(self $response, string $name, mixed $value): void
+    private static function setProperty(self $request, string $name, mixed $value): void
     {
         static $cache;
 
         $r = $cache[$name] ??= new \ReflectionProperty(self::class, $name);
 
-        $r->setRawValue($response, $value);
+        $r->setRawValue($request, $value);
     }
 }

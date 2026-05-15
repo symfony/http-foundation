@@ -399,6 +399,9 @@ class BinaryFileResponse extends Response
         return $this;
     }
 
+    /**
+     * Returns whether the file will be unlinked after the request is sent.
+     */
     public function shouldDeleteFileAfterSend(): bool
     {
         return $this->deleteFileAfterSend;

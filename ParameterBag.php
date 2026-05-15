@@ -163,7 +163,7 @@ class ParameterBag implements \IteratorAggregate, \Countable
      */
     public function getInt(string $key, int $default = 0): int
     {
-        return $this->filter($key, $default, \FILTER_VALIDATE_INT, ['flags' => \FILTER_REQUIRE_SCALAR | \FILTER_NULL_ON_FAILURE]) ?? throw new \UnexpectedValueException(\sprintf('Parameter value "%s" cannot be converted to "int".', $key));
+        return $this->filter($key, $default, \FILTER_VALIDATE_INT, ['flags' => \FILTER_REQUIRE_SCALAR | \FILTER_NULL_ON_FAILURE]) ?? throw new UnexpectedValueException(\sprintf('Parameter value "%s" cannot be converted to "int".', $key));
     }
 
     /**
@@ -173,7 +173,7 @@ class ParameterBag implements \IteratorAggregate, \Countable
      */
     public function getBoolean(string $key, bool $default = false): bool
     {
-        return $this->filter($key, $default, \FILTER_VALIDATE_BOOL, ['flags' => \FILTER_REQUIRE_SCALAR | \FILTER_NULL_ON_FAILURE]) ?? throw new \UnexpectedValueException(\sprintf('Parameter value "%s" cannot be converted to "bool".', $key));
+        return $this->filter($key, $default, \FILTER_VALIDATE_BOOL, ['flags' => \FILTER_REQUIRE_SCALAR | \FILTER_NULL_ON_FAILURE]) ?? throw new UnexpectedValueException(\sprintf('Parameter value "%s" cannot be converted to "bool".', $key));
     }
 
     /**
@@ -192,7 +192,7 @@ class ParameterBag implements \IteratorAggregate, \Countable
      */
     public function getEnum(string $key, string $class, ?\BackedEnum $default = null): ?\BackedEnum
     {
-        if ($default === $value = $this->get($key, $default)) {
+        if (null === $value = $this->get($key)) {
             return $default;
         }
 

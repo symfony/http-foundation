@@ -107,7 +107,7 @@ class Response
 
     public ResponseHeaderBag $headers {
         set {
-            trigger_deprecation('symfony/http-foundation', '8.1', 'Directly setting property "headers" of "%s" is deprecated; pass the header bag as a constructor argument instead.', __CLASS__);
+            trigger_deprecation('symfony/http-foundation', '8.1', 'Directly setting property "headers" of "%s" is deprecated; pass the header bag as a constructor argument instead.', static::class);
 
             $this->headers = $value;
         }
