@@ -14,7 +14,6 @@ namespace Symfony\Component\HttpFoundation\Tests\Session\Storage\Handler;
 use Doctrine\DBAL\Schema\Schema;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\TestCase;
@@ -326,33 +325,29 @@ class PdoSessionHandlerTest extends TestCase
 
     public function testConfigureSchemaDifferentDatabase()
     {
-        $schema = new Schema();
-
         $pdoSessionHandler = new PdoSessionHandler($this->getMemorySqlitePdo());
-        $pdoSessionHandler->configureSchema($schema, static fn () => false);
+        $schema = $pdoSessionHandler->configureSchema(new Schema(), static fn () => false);
         $this->assertFalse($schema->hasTable('sessions'));
     }
 
-    #[IgnoreDeprecations]
-    #[Group('doctrine-dbal-workaround')]
     public function testConfigureSchemaSameDatabase()
     {
-        $schema = new Schema();
-
         $pdoSessionHandler = new PdoSessionHandler($this->getMemorySqlitePdo());
-        $pdoSessionHandler->configureSchema($schema, static fn () => true);
+        $schema = $pdoSessionHandler->configureSchema(new Schema(), static fn () => true);
         $this->assertTrue($schema->hasTable('sessions'));
     }
 
-    #[IgnoreDeprecations]
-    #[Group('doctrine-dbal-workaround')]
     public function testConfigureSchemaTableExistsPdo()
     {
-        $schema = new Schema();
-        $schema->createTable('sessions');
+        if (method_exists(Schema::class, 'edit')) {
+            $schema = (new Schema())->edit()->addTable(new \Doctrine\DBAL\Schema\Table('sessions'))->create();
+        } else {
+            $schema = new Schema();
+            $schema->createTable('sessions');
+        }
 
         $pdoSessionHandler = new PdoSessionHandler($this->getMemorySqlitePdo());
-        $pdoSessionHandler->configureSchema($schema, static fn () => true);
+        $schema = $pdoSessionHandler->configureSchema($schema, static fn () => true);
         $table = $schema->getTable('sessions');
         $this->assertSame([], $table->getColumns(), 'The table was not overwritten');
     }
