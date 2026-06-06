@@ -26,6 +26,7 @@ class IpUtils
         '169.254.0.0/16', // RFC3927
         '0.0.0.0/8',      // RFC5735
         '240.0.0.0/4',    // RFC1112
+        '100.64.0.0/10',  // RFC6598
         '::1/128',        // Loopback
         'fc00::/7',       // Unique Local Address
         'fe80::/10',      // Link Local Address
