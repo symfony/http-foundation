@@ -11,7 +11,13 @@
 
 namespace Symfony\Component\HttpFoundation\Session\Storage\Handler;
 
+use Doctrine\DBAL\Schema\Column;
+use Doctrine\DBAL\Schema\Index;
+use Doctrine\DBAL\Schema\Name\Identifier;
+use Doctrine\DBAL\Schema\Name\UnqualifiedName;
+use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Types;
 
 /**
@@ -180,50 +186,122 @@ class PdoSessionHandler extends AbstractSessionHandler
 
     /**
      * Adds the Table to the Schema if it doesn't exist.
+     *
+     * @return Schema The (possibly new) schema with the table added
      */
-    public function configureSchema(Schema $schema, ?\Closure $isSameDatabase = null): void
+    public function configureSchema(Schema $schema, ?\Closure $isSameDatabase = null)
     {
         if ($schema->hasTable($this->table) || ($isSameDatabase && !$isSameDatabase($this->getConnection()->exec(...)))) {
-            return;
+            return $schema;
         }
 
-        $table = $schema->createTable($this->table);
+        if (method_exists($schema, 'edit')) {
+            return $schema->edit()->addTable($this->buildSchemaTable())->create();
+        }
+
+        $this->configureSchemaTable($schema->createTable($this->table));
+
+        return $schema;
+    }
+
+    private function buildSchemaTable(): Table
+    {
+        $editor = Table::editor()->setUnquotedName($this->table);
+
         switch ($this->driver) {
             case 'mysql':
-                $table->addColumn($this->idCol, Types::BINARY)->setLength(128)->setNotnull(true);
-                $table->addColumn($this->dataCol, Types::BLOB)->setNotnull(true);
-                $table->addColumn($this->lifetimeCol, Types::INTEGER)->setUnsigned(true)->setNotnull(true);
-                $table->addColumn($this->timeCol, Types::INTEGER)->setUnsigned(true)->setNotnull(true);
-                $table->addOption('engine', 'InnoDB');
+                $editor
+                    ->addColumn(Column::editor()->setUnquotedName($this->idCol)->setTypeName(Types::BINARY)->setLength(128)->setNotNull(true)->create())
+                    ->addColumn(Column::editor()->setUnquotedName($this->dataCol)->setTypeName(Types::BLOB)->setNotNull(true)->create())
+                    ->addColumn(Column::editor()->setUnquotedName($this->lifetimeCol)->setTypeName(Types::INTEGER)->setUnsigned(true)->setNotNull(true)->create())
+                    ->addColumn(Column::editor()->setUnquotedName($this->timeCol)->setTypeName(Types::INTEGER)->setUnsigned(true)->setNotNull(true)->create())
+                    ->setOptions(['engine' => 'InnoDB']);
                 break;
             case 'sqlite':
-                $table->addColumn($this->idCol, Types::TEXT)->setNotnull(true);
-                $table->addColumn($this->dataCol, Types::BLOB)->setNotnull(true);
-                $table->addColumn($this->lifetimeCol, Types::INTEGER)->setNotnull(true);
-                $table->addColumn($this->timeCol, Types::INTEGER)->setNotnull(true);
+                $editor
+                    ->addColumn(Column::editor()->setUnquotedName($this->idCol)->setTypeName(Types::TEXT)->setNotNull(true)->create())
+                    ->addColumn(Column::editor()->setUnquotedName($this->dataCol)->setTypeName(Types::BLOB)->setNotNull(true)->create())
+                    ->addColumn(Column::editor()->setUnquotedName($this->lifetimeCol)->setTypeName(Types::INTEGER)->setNotNull(true)->create())
+                    ->addColumn(Column::editor()->setUnquotedName($this->timeCol)->setTypeName(Types::INTEGER)->setNotNull(true)->create());
                 break;
             case 'pgsql':
-                $table->addColumn($this->idCol, Types::STRING)->setLength(128)->setNotnull(true);
-                $table->addColumn($this->dataCol, Types::BINARY)->setNotnull(true);
-                $table->addColumn($this->lifetimeCol, Types::INTEGER)->setNotnull(true);
-                $table->addColumn($this->timeCol, Types::INTEGER)->setNotnull(true);
+                $editor
+                    ->addColumn(Column::editor()->setUnquotedName($this->idCol)->setTypeName(Types::STRING)->setLength(128)->setNotNull(true)->create())
+                    ->addColumn(Column::editor()->setUnquotedName($this->dataCol)->setTypeName(Types::BINARY)->setNotNull(true)->create())
+                    ->addColumn(Column::editor()->setUnquotedName($this->lifetimeCol)->setTypeName(Types::INTEGER)->setNotNull(true)->create())
+                    ->addColumn(Column::editor()->setUnquotedName($this->timeCol)->setTypeName(Types::INTEGER)->setNotNull(true)->create());
                 break;
             case 'oci':
-                $table->addColumn($this->idCol, Types::STRING)->setLength(128)->setNotnull(true);
-                $table->addColumn($this->dataCol, Types::BLOB)->setNotnull(true);
-                $table->addColumn($this->lifetimeCol, Types::INTEGER)->setNotnull(true);
-                $table->addColumn($this->timeCol, Types::INTEGER)->setNotnull(true);
+                $editor
+                    ->addColumn(Column::editor()->setUnquotedName($this->idCol)->setTypeName(Types::STRING)->setLength(128)->setNotNull(true)->create())
+                    ->addColumn(Column::editor()->setUnquotedName($this->dataCol)->setTypeName(Types::BLOB)->setNotNull(true)->create())
+                    ->addColumn(Column::editor()->setUnquotedName($this->lifetimeCol)->setTypeName(Types::INTEGER)->setNotNull(true)->create())
+                    ->addColumn(Column::editor()->setUnquotedName($this->timeCol)->setTypeName(Types::INTEGER)->setNotNull(true)->create());
                 break;
             case 'sqlsrv':
-                $table->addColumn($this->idCol, Types::STRING)->setLength(128)->setNotnull(true);
-                $table->addColumn($this->dataCol, Types::BLOB)->setNotnull(true);
-                $table->addColumn($this->lifetimeCol, Types::INTEGER)->setUnsigned(true)->setNotnull(true);
-                $table->addColumn($this->timeCol, Types::INTEGER)->setUnsigned(true)->setNotnull(true);
+                $editor
+                    ->addColumn(Column::editor()->setUnquotedName($this->idCol)->setTypeName(Types::STRING)->setLength(128)->setNotNull(true)->create())
+                    ->addColumn(Column::editor()->setUnquotedName($this->dataCol)->setTypeName(Types::BLOB)->setNotNull(true)->create())
+                    ->addColumn(Column::editor()->setUnquotedName($this->lifetimeCol)->setTypeName(Types::INTEGER)->setUnsigned(true)->setNotNull(true)->create())
+                    ->addColumn(Column::editor()->setUnquotedName($this->timeCol)->setTypeName(Types::INTEGER)->setUnsigned(true)->setNotNull(true)->create());
                 break;
             default:
                 throw new \DomainException(\sprintf('Creating the session table is currently not implemented for PDO driver "%s".', $this->driver));
         }
-        $table->setPrimaryKey([$this->idCol]);
+
+        return $editor
+            ->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, [new UnqualifiedName(Identifier::unquoted($this->idCol))], true))
+            ->addIndex(Index::editor()->setUnquotedName($this->lifetimeCol.'_idx')->setUnquotedColumnNames($this->lifetimeCol)->create())
+            ->create();
+    }
+
+    /**
+     * To be removed when doctrine/dbal minimum is bumped to ^4.5.
+     */
+    private function configureSchemaTable(Table $table): void
+    {
+        switch ($this->driver) {
+            case 'mysql':
+                $table->addColumn($this->idCol, Types::BINARY, ['length' => 128, 'notnull' => true]);
+                $table->addColumn($this->dataCol, Types::BLOB, ['notnull' => true]);
+                $table->addColumn($this->lifetimeCol, Types::INTEGER, ['unsigned' => true, 'notnull' => true]);
+                $table->addColumn($this->timeCol, Types::INTEGER, ['unsigned' => true, 'notnull' => true]);
+                $table->addOption('engine', 'InnoDB');
+                break;
+            case 'sqlite':
+                $table->addColumn($this->idCol, Types::TEXT, ['notnull' => true]);
+                $table->addColumn($this->dataCol, Types::BLOB, ['notnull' => true]);
+                $table->addColumn($this->lifetimeCol, Types::INTEGER, ['notnull' => true]);
+                $table->addColumn($this->timeCol, Types::INTEGER, ['notnull' => true]);
+                break;
+            case 'pgsql':
+                $table->addColumn($this->idCol, Types::STRING, ['length' => 128, 'notnull' => true]);
+                $table->addColumn($this->dataCol, Types::BINARY, ['notnull' => true]);
+                $table->addColumn($this->lifetimeCol, Types::INTEGER, ['notnull' => true]);
+                $table->addColumn($this->timeCol, Types::INTEGER, ['notnull' => true]);
+                break;
+            case 'oci':
+                $table->addColumn($this->idCol, Types::STRING, ['length' => 128, 'notnull' => true]);
+                $table->addColumn($this->dataCol, Types::BLOB, ['notnull' => true]);
+                $table->addColumn($this->lifetimeCol, Types::INTEGER, ['notnull' => true]);
+                $table->addColumn($this->timeCol, Types::INTEGER, ['notnull' => true]);
+                break;
+            case 'sqlsrv':
+                $table->addColumn($this->idCol, Types::STRING, ['length' => 128, 'notnull' => true]);
+                $table->addColumn($this->dataCol, Types::BLOB, ['notnull' => true]);
+                $table->addColumn($this->lifetimeCol, Types::INTEGER, ['unsigned' => true, 'notnull' => true]);
+                $table->addColumn($this->timeCol, Types::INTEGER, ['unsigned' => true, 'notnull' => true]);
+                break;
+            default:
+                throw new \DomainException(\sprintf('Creating the session table is currently not implemented for PDO driver "%s".', $this->driver));
+        }
+
+        if (class_exists(PrimaryKeyConstraint::class)) {
+            $table->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, [new UnqualifiedName(Identifier::unquoted($this->idCol))], true));
+        } else {
+            $table->setPrimaryKey([$this->idCol]);
+        }
+
         $table->addIndex([$this->lifetimeCol], $this->lifetimeCol.'_idx');
     }
 
